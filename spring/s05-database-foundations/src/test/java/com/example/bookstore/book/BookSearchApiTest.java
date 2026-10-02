@@ -185,19 +185,26 @@ class BookSearchApiTest {
         @Test
         @DisplayName("a quote in the text can't add OR '1'='1' to the query")
         void quoteCantAddAnOrCondition() {
-            assertThat(search("' OR '1'='1", null)).hasStatusOk().bodyJson().isStrictlyEqualTo("[]");
+            assertFindsNothing("' OR '1'='1");
         }
 
         @Test
         @DisplayName("a UNION in the text can't read the members table")
         void unionCantReadMembers() {
-            assertThat(search(UNION_ATTACK, null)).hasStatusOk().bodyJson().isStrictlyEqualTo("[]");
+            assertFindsNothing(UNION_ATTACK);
         }
 
         @Test
         @DisplayName("a backslash before the quote doesn't help the UNION either")
         void backslashDoesntHelp() {
-            assertThat(search(BACKSLASH_ATTACK, null)).hasStatusOk().bodyJson().isStrictlyEqualTo("[]");
+            assertFindsNothing(BACKSLASH_ATTACK);
+        }
+
+        /** No book contains the attack's text. The titles in the failure message show what leaked instead. */
+        private void assertFindsNothing(String attack) {
+            assertThat(search(attack, null))
+                    .hasStatusOk()
+                    .bodyJson().extractingPath("$[*].title").asArray().as("titles found").isEmpty();
         }
 
         @Test
