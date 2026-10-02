@@ -3,9 +3,12 @@
 
 Run from the repository root:  python3 .authoring/bookstore/generate_seed.py
 The output is the same on every run (fixed random seed), so tests and documentation can rely on it.
-Facts that tests and spring/BOOKSTORE.md rely on are asserted at the bottom.
+Facts that tests and spring/BOOKSTORE.md rely on, and the business rules the data must follow (wallet histories add up
+to the balances, coupons are issued and used while valid, one review per member and book), are asserted at the bottom.
+When you change this script, keep the order of the random draws, or every row after the change differs.
 """
 import random
+from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
@@ -154,11 +157,12 @@ for book_id, (title, author, category, year) in enumerate(BOOKS, start=1):
         quantity = rng.randrange(1, 31)
     inventories.append([str(book_id), str(quantity), "0"])
 
-# ---------------------------------------------------------------- members and wallets
-members, wallets, wallet_transactions = [], [], []
+# ---------------------------------------------------------------- members (their wallets are written after the payments)
+members, balances, joined_at = [], {}, {}
 for member_id, (name, handle) in enumerate(MEMBERS, start=1):
     role = "ADMIN" if member_id == ADMIN_ID else "USER"
     joined = CATALOG_CREATED + timedelta(days=member_id)
+    joined_at[member_id] = joined
     members.append([str(member_id), sql_string(f"{handle}@example.com"), sql_string(name),
                     sql_string(PASSWORD_HASH), sql_string(role), ts(joined), ts(joined)])
     if member_id == 1:
@@ -167,30 +171,30 @@ for member_id, (name, handle) in enumerate(MEMBERS, start=1):
         balance = 0
     else:
         balance = rng.randrange(20, 201) * 1000
-    wallets.append([str(member_id), str(member_id), str(balance), "0", ts(joined), ts(joined)])
-    if balance > 0:
-        wallet_transactions.append([str(len(wallet_transactions) + 1), str(member_id), "'CHARGE'", str(balance),
-                                    ts(joined + timedelta(hours=1))])
+    balances[member_id] = balance  # the balance today, after every payment below
 
 # ---------------------------------------------------------------- coupons and issues
 coupons = [
-    # id, code, discount, total, issued, from, until
+    # id, code, discount, total, valid from, valid until
     (1, "WELCOME5000", 5000, 1000, datetime(2026, 1, 1), datetime(2026, 12, 31, 23, 59, 59)),
     (2, "FLASH10000", 10000, 10, datetime(2026, 10, 1), datetime(2026, 10, 31, 23, 59, 59)),
     (3, "AUTUMN3000", 3000, 500, datetime(2026, 9, 1), datetime(2026, 11, 30, 23, 59, 59)),
-    (4, "EXPIRED2000", 2000, 100, datetime(2026, 1, 1), datetime(2026, 3, 31, 23, 59, 59)),
+    # Valid in July and August: members 2-6 received it then, never used it, and it has expired since.
+    (4, "EXPIRED2000", 2000, 100, datetime(2026, 7, 1), datetime(2026, 8, 31, 23, 59, 59)),
 ]
+coupon_by_id = {coupon[0]: coupon for coupon in coupons}
 issued_members = {1: range(1, 16), 2: range(0), 3: range(1, 11), 4: range(2, 7)}
-coupon_rows, coupon_issue_rows = [], []
+# These members used the coupon to pay for their first order after receiving it (see "coupon use" below).
+USED_COUPONS = {(1, 2), (1, 3), (3, 1)}
+coupon_rows, coupon_issues = [], []
 for coupon_id, code, discount, total, valid_from, valid_until in coupons:
     issued = list(issued_members[coupon_id])
     coupon_rows.append([str(coupon_id), sql_string(code), str(discount), str(total), str(len(issued)),
                         ts(valid_from), ts(valid_until), "0"])
     for member_id in issued:
         issued_at = max(valid_from, CATALOG_CREATED) + timedelta(days=member_id, hours=3)
-        used_at = ts(issued_at + timedelta(days=2)) if (coupon_id, member_id) in {(1, 2), (1, 3), (3, 1)} else "NULL"
-        coupon_issue_rows.append([str(len(coupon_issue_rows) + 1), str(coupon_id), str(member_id),
-                                  ts(issued_at), used_at])
+        coupon_issues.append({"coupon_id": coupon_id, "member_id": member_id, "issued_at": issued_at,
+                              "used_at": None})
 
 # ---------------------------------------------------------------- orders, lines, payments
 order_specs = []
@@ -220,15 +224,64 @@ for order_id, (ordered_at, member_id) in enumerate(order_specs, start=1):
                    ts(updated)])
     if status in ("PAID", "SHIPPED"):
         key = "%032x" % rng.getrandbits(128)
-        payments.append([str(len(payments) + 1), str(order_id), sql_string(key), str(total), "'APPROVED'",
-                         ts(ordered_at + timedelta(minutes=5))])
+        payments.append({"order_id": order_id, "member_id": member_id, "key": key, "amount": total,
+                         "created_at": ordered_at + timedelta(minutes=5), "coupon": None})
+
+# ---------------------------------------------------------------- coupon use
+# A used coupon paid for part of the member's first order after they received it (while the coupon was valid): that
+# payment is the order's total minus the discount, and the coupon's used_at is the payment's time.
+for issue in coupon_issues:
+    if (issue["coupon_id"], issue["member_id"]) not in USED_COUPONS:
+        continue
+    _, code, discount, _, valid_from, valid_until = coupon_by_id[issue["coupon_id"]]
+    payment = next(p for p in payments  # payments are in time order
+                   if p["member_id"] == issue["member_id"] and p["coupon"] is None
+                   and issue["issued_at"] <= p["created_at"] <= valid_until)
+    payment["amount"] -= discount
+    payment["coupon"] = code
+    issue["used_at"] = payment["created_at"]
+
+# ---------------------------------------------------------------- wallets and their history
+# Members paid every order from their wallet. Each member charged the wallet once, an hour after joining, with the
+# money for all their payments plus today's balance. So every wallet's transactions add up to its balance.
+paid_by_member = {member_id: 0 for member_id in balances}
+for payment in payments:
+    paid_by_member[payment["member_id"]] += payment["amount"]
+transactions = []  # (created_at, wallet_id, type, amount); a wallet's id is its member's id
+for member_id, balance in balances.items():
+    charge = balance + paid_by_member[member_id]
+    if charge > 0:
+        transactions.append((joined_at[member_id] + timedelta(hours=1), member_id, "CHARGE", charge))
+for payment in payments:
+    transactions.append((payment["created_at"], payment["member_id"], "PAYMENT", payment["amount"]))
+transactions.sort()  # ids in time order
+last_change = {wallet_id: created_at for created_at, wallet_id, _, _ in transactions}
+wallets = [[str(member_id), str(member_id), str(balance), "0", ts(joined_at[member_id]),
+            ts(last_change.get(member_id, joined_at[member_id]))] for member_id, balance in balances.items()]
+wallet_transactions = [[str(tx_id), str(wallet_id), sql_string(tx_type), str(amount), ts(created_at)]
+                       for tx_id, (created_at, wallet_id, tx_type, amount) in enumerate(transactions, start=1)]
+payment_rows = [[str(payment_id), str(p["order_id"]), sql_string(p["key"]), str(p["amount"]), "'APPROVED'",
+                 ts(p["created_at"])] for payment_id, p in enumerate(payments, start=1)]
+coupon_issue_rows = [[str(issue_id), str(i["coupon_id"]), str(i["member_id"]), ts(i["issued_at"]),
+                      ts(i["used_at"]) if i["used_at"] else "NULL"] for issue_id, i in enumerate(coupon_issues, start=1)]
 
 # ---------------------------------------------------------------- reviews
+# Each member reviews a book at most once. Book 1 has exactly BOOK_1_REVIEWS reviews; the others are spread over the
+# rest of the catalog, three times as often over the technical categories.
+BOOK_1_REVIEWS = 15
 weights = [6 if BOOKS[i][2] in (0, 1, 2) else 2 for i in range(len(BOOKS))]
+other_books = list(range(2, len(BOOKS) + 1))
+reviewed = set()  # (book_id, member_id)
 review_rows = []
 for review_id in range(1, 301):
-    book_id = 1 if review_id <= 12 else rng.choices(range(1, len(BOOKS) + 1), weights=weights)[0]
-    member_id = rng.choice(CUSTOMER_IDS)
+    if review_id <= BOOK_1_REVIEWS:
+        book_id = 1
+    else:
+        book_id = rng.choices(other_books, weights=weights[1:])[0]
+        while all((book_id, member) in reviewed for member in CUSTOMER_IDS):
+            book_id = rng.choices(other_books, weights=weights[1:])[0]
+    member_id = rng.choice([member for member in CUSTOMER_IDS if (book_id, member) not in reviewed])
+    reviewed.add((book_id, member_id))
     rating = rng.choices([1, 2, 3, 4, 5], weights=[1, 1, 3, 6, 6])[0]
     created = datetime(2026, 8, 1) + timedelta(minutes=rng.randrange(0, 61 * 24 * 60))
     review_rows.append([str(review_id), str(book_id), str(member_id), str(rating),
@@ -250,24 +303,40 @@ sql = [
     insert("coupon_issues", ["id", "coupon_id", "member_id", "issued_at", "used_at"], coupon_issue_rows),
     insert("orders", ["id", "member_id", "status", "total_amount", "ordered_at", "created_at", "updated_at"], orders),
     insert("order_lines", ["id", "order_id", "book_id", "quantity", "unit_price"], order_lines),
-    insert("payments", ["id", "order_id", "idempotency_key", "amount", "status", "created_at"], payments),
+    insert("payments", ["id", "order_id", "idempotency_key", "amount", "status", "created_at"], payment_rows),
     insert("reviews", ["id", "book_id", "member_id", "rating", "content", "created_at"], review_rows),
 ]
-OUT.parent.mkdir(parents=True, exist_ok=True)
-OUT.write_text("\n".join(sql))
 
-# ---------------------------------------------------------------- facts the documentation relies on
+# ---------------------------------------------------------------- facts spring/BOOKSTORE.md documents
+status_counts = Counter(row[2].strip("'") for row in orders)
 minji_orders = sum(1 for row in orders if row[1] == "1")
 book1_reviews = sum(1 for row in review_rows if row[1] == "1")
-assert prices[1] == 36000 and inventories[0][1] == "10"
-assert minji_orders >= 5 and book1_reviews >= 12
+assert (len(categories), len(books), len(members), len(orders), len(order_lines), len(payments),
+        len(review_rows)) == (6, 60, 20, 200, 357, 156, 300)
+assert status_counts == {"PAID": 108, "SHIPPED": 48, "PENDING": 33, "CANCELLED": 11}, status_counts
+assert prices[1] == 36000 and inventories[0][1] == "10" and inventories[58][1] == inventories[59][1] == "0"
+assert minji_orders == 14 and book1_reviews == BOOK_1_REVIEWS
+assert balances[1] == 100_000 and balances[ADMIN_ID] == 0
+
+# ---------------------------------------------------------------- the data is consistent with the business rules
+signs = {"CHARGE": 1, "PAYMENT": -1}
+for member_id, balance in balances.items():
+    assert sum(signs[t] * amount for _, wallet, t, amount in transactions if wallet == member_id) == balance
+for issue in coupon_issues:
+    _, code, _, _, valid_from, valid_until = coupon_by_id[issue["coupon_id"]]
+    assert valid_from <= issue["issued_at"] <= valid_until, f"{code} issued outside its validity"
+    assert joined_at[issue["member_id"]] <= issue["issued_at"], f"{code} issued before the member joined"
+    assert issue["used_at"] is None or issue["issued_at"] <= issue["used_at"] <= valid_until
+assert sum(1 for issue in coupon_issues if issue["used_at"]) == len(USED_COUPONS)
+assert len(reviewed) == len(review_rows), "a member reviewed the same book twice"
+
+OUT.parent.mkdir(parents=True, exist_ok=True)
+OUT.write_text("\n".join(sql))
 print(f"wrote {OUT}")
 print(f"categories={len(categories)} books={len(books)} members={len(members)} orders={len(orders)} "
       f"order_lines={len(order_lines)} payments={len(payments)} reviews={len(review_rows)} "
-      f"coupon_issues={len(coupon_issue_rows)}")
+      f"coupon_issues={len(coupon_issue_rows)} wallet_transactions={len(wallet_transactions)}")
 print(f"minji orders={minji_orders} book 1 reviews={book1_reviews} minji wallet=100000")
-status_counts = {}
-for row in orders:
-    status_counts[row[2]] = status_counts.get(row[2], 0) + 1
-print("order statuses:", status_counts)
+print("order statuses:", dict(status_counts))
+print("coupons used:", [(p["coupon"], p["member_id"], p["order_id"], p["amount"]) for p in payments if p["coupon"]])
 print("books 2-5 prices:", [prices[i] for i in range(2, 6)], "stock:", [inventories[i - 1][1] for i in range(2, 6)])

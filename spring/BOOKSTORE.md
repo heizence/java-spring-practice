@@ -51,11 +51,13 @@ Member ──< Order ──< OrderLine >── Book >── Category
 | Categories | 6: Programming (1), Databases (2), Software Architecture (3), Fiction (4), Science (5), Self-Help (6) |
 | Books | 60. Book 1 is *Effective Java* by Joshua Bloch, 36,000 won, 10 in stock. Books 59 (*Range*) and 60 (*Ultralearning*) are out of stock. Books 41 and 42 have Korean titles (*진달래꽃*, *운수 좋은 날*). |
 | Members | 20, all with the password `bookstore123`. Member 1 is Minji Kim (`minji@example.com`). Member 20 is the administrator (`admin@example.com`, role `ADMIN`). |
-| Wallets | One per member. Minji's balance is 100,000 won; the admin's is 0. |
-| Coupons | `WELCOME5000` (1,000 total, issued to members 1–15) · `FLASH10000` (only 10, none issued yet, valid in October 2026) · `AUTUMN3000` (500 total, issued to members 1–10) · `EXPIRED2000` (expired on 2026-03-31) |
+| Wallets | One per member. Minji's balance is 100,000 won; the admin's is 0. Each wallet's history adds up to its balance: a `CHARGE` when the member joined, then a `PAYMENT` for each approved payment. |
+| Coupons | `WELCOME5000` (1,000 total, issued to members 1–15; members 2 and 3 used theirs) · `FLASH10000` (only 10, none issued yet, valid in October 2026) · `AUTUMN3000` (500 total, issued to members 1–10; Minji used hers) · `EXPIRED2000` (valid in July and August 2026 only; members 2–6 received it and never used it) |
 | Orders | 200 orders with 357 lines from August and September 2026: 108 `PAID`, 48 `SHIPPED`, 33 `PENDING`, 11 `CANCELLED`. Minji has 14 of them. |
-| Payments | One `APPROVED` payment for every paid or shipped order (156). |
-| Reviews | 300. Book 1 has 15. |
+| Payments | One `APPROVED` payment for every paid or shipped order (156). Its amount is the order's total, minus the discount for the three orders paid with a coupon. |
+| Reviews | 300, at most one per member and book. Book 1 has 15. |
+
+Tests run with the application's clock stopped at **2026-10-15T00:00:00Z**, so "now" is the same whenever you run them: `WELCOME5000`, `FLASH10000` and `AUTUMN3000` are valid, `EXPIRED2000` has expired, and every seeded order lies in the past. A test can move the clock.
 
 ## Package layout
 
@@ -94,16 +96,41 @@ The handbook explains each of these rules: [Spring layering](../docs/handbook/sp
 | JSON property names are `camelCase`; times are ISO-8601 strings in UTC | `"orderedAt": "2026-09-14T08:15:00Z"` |
 | Lists are paged with `page` (from 0) and `size` | `GET /api/books?page=0&size=20&sort=price,desc` |
 
+A page of a list:
+
+```json
+{
+  "content": [
+    { "id": 1, "isbn": "9791115881394", "title": "Effective Java", "author": "Joshua Bloch", "category": "Programming", "price": 36000, "publishedDate": "2018-10-18" }
+  ],
+  "page": { "size": 20, "number": 0, "totalElements": 60, "totalPages": 3 }
+}
+```
+
 An error response:
 
 ```json
 {
-  "type": "about:blank",
   "title": "Conflict",
   "status": 409,
   "detail": "Only 3 copies of book 7 are left, but 5 were requested.",
   "instance": "/api/orders",
   "code": "OUT_OF_STOCK"
+}
+```
+
+There is no `type` property: RFC 9457 reads a missing `type` as `about:blank`, which means "the status code says it all". When the input is invalid, `errors` lists every invalid value:
+
+```json
+{
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid request content.",
+  "instance": "/api/orders",
+  "code": "INVALID_INPUT",
+  "errors": [
+    { "field": "lines[0].quantity", "message": "must be greater than or equal to 1" }
+  ]
 }
 ```
 
