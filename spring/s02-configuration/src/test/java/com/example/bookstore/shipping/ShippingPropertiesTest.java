@@ -81,7 +81,7 @@ class ShippingPropertiesTest {
                             .containsExactlyInAnyOrder(Region.BUSAN, Region.JEJU));
         }
 
-        @ParameterizedTest(name = "{0}")
+        @ParameterizedTest(name = "{0}", quoteTextArguments = false)
         @ValueSource(strings = {"bookstore.shipping.free-threshold", "bookstore.shipping.freeThreshold",
                 "bookstore.shipping.free_threshold"})
         @DisplayName("relaxed binding: every spelling of a property name reaches the same component")
