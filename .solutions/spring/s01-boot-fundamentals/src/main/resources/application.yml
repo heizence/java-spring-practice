@@ -1,0 +1,12 @@
+# The bookstore's configuration. Spring Boot reads this file when the application starts.
+
+spring:
+  application:
+    # Appears in every log line ("--- [bookstore]"), and later names the service in metrics and traces.
+    name: bookstore
+
+  main:
+    # The bookstore has no web layer yet (S04 adds one). Without a web server on the classpath, Spring Boot would
+    # choose "none" by itself; saying it here documents the intent, and keeps a web library that arrives later as a
+    # dependency of some other library from starting a server.
+    web-application-type: none
