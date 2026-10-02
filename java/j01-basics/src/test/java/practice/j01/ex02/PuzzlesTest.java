@@ -32,7 +32,7 @@ class PuzzlesTest {
         }
 
         @Test
-        @DisplayName("24 * 60 * 60 * 1000 * 1000 stored in a long")
+        @DisplayName("24 * 60 * 60 * 1000 * 1000 stored in a long == 86_400_000_000L")
         void multiplyBeforeWidening() {
             Predict.check(Answers.MULTIPLY_BEFORE_WIDENING, Puzzles.multiplyBeforeWidening());
         }

@@ -95,7 +95,7 @@ public final class ControlFlow {
     }
 
     /**
-     * Finds the first place where two neighbouring cells in the same row hold the same value, and returns the
+     * Finds the first place where two neighboring cells in the same row hold the same value, and returns the
      * position {@code {row, column}} of the left cell of that pair.
      *
      * <pre>
@@ -106,7 +106,7 @@ public final class ControlFlow {
      *
      * <ul>
      *   <li>The search goes row by row from the top, and from left to right within a row.</li>
-     *   <li>Only neighbours in the same row count: not the last cell of a row and the first of the next, and not
+     *   <li>Only neighbors in the same row count: not the last cell of a row and the first of the next, and not
      *       cells above each other.</li>
      *   <li>Rows may have different lengths, and may be empty.</li>
      *   <li>If there is no pair, the result is an empty array.</li>
