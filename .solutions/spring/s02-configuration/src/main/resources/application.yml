@@ -1,0 +1,24 @@
+# The bookstore's configuration for every environment. Profile-specific files (application-local.yml,
+# application-prod.yml) add to it and override it.
+
+spring:
+  application:
+    name: bookstore
+  main:
+    # No web layer yet (S04 adds one).
+    web-application-type: none
+
+bookstore:
+  shipping:
+    # Amounts in won: orders of at least 20,000 won ship for free, smaller ones pay 3,000 won.
+    free-threshold: 20000
+    fee: 3000
+    # A Duration from midnight, Seoul time. Write "14h", never "14:00": YAML reads 14:00 as the number 840 (14 x 60),
+    # which Spring would bind as 840 milliseconds.
+    cutoff-time: 14h
+    # Enum names, in any letter case. An environment variable writes the same list as "seoul,incheon,gyeonggi,busan".
+    supported-regions:
+      - seoul
+      - incheon
+      - gyeonggi
+      - busan

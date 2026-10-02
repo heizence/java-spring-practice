@@ -1,0 +1,4 @@
+# Production settings, read on top of application.yml when the profile "prod" is active. This file is in git, so
+# secrets never go in here: the servers pass them as environment variables.
+#
+# TODO: S02-02 — the mail provider's API URL (see the README).

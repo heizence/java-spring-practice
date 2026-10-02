@@ -1,0 +1,11 @@
+# The bookstore's configuration for every environment. Profile-specific files (application-local.yml,
+# application-prod.yml) add to it and override it.
+
+spring:
+  application:
+    name: bookstore
+  main:
+    # No web layer yet (S04 adds one).
+    web-application-type: none
+
+# TODO: S02-01 — the shipping rules, under bookstore.shipping (see the README).
