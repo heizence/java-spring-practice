@@ -56,7 +56,7 @@ Test support (`src/test/java/com/example/bookstore/support/`):
 | Module | Copy | Leave out |
 |---|---|---|
 | **S01–S04** (no database) | `BookstoreApplication`, `common/error/*`, `common/ClockConfiguration` if the module reads the time, `support/TestClock` if its tests control time, and from `application.yml` only `spring.application.name` and `spring.web.locale*`. | Entities and repositories (JPA annotations need JPA: model what the module needs as plain classes or records in the same packages), migrations, `compose.yaml`, the other test support. In `GlobalExceptionHandler`, delete `handlePropertyReference` (it needs Spring Data). |
-| **S05** (JDBC) | As S01–S04, plus `db/migration/*`, `compose.yaml`, the datasource, Flyway and logging parts of `application.yml`, and `support/` without `SqlStatementCounter` (delete its two beans in `IntegrationTestConfiguration`). | Entities, repositories, `BaseTimeEntity`, `JpaAuditingConfiguration`, the `jpa` part of `application.yml`, `handlePropertyReference`. |
+| **S05** (JDBC) | As S01–S04, plus `db/migration/*`, `compose.yaml`, the datasource, Flyway and logging parts of `application.yml`, and `support/` without `SqlStatementCounter` (delete its two beans in `IntegrationTestConfiguration` and its reset in `IntegrationTestListener`). | Entities, repositories, `BaseTimeEntity`, `JpaAuditingConfiguration`, the `jpa` part of `application.yml`, `handlePropertyReference`. |
 | **S06+** (JPA) | Everything except the template's own tests. | `BookController`/`BookService`/`BookResponse` if the module's exercises build them. |
 
 The starters in `build.gradle.kts` follow the same split: S01–S04 need `webmvc` and `validation` (and their `-test`

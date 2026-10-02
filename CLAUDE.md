@@ -282,6 +282,10 @@ spring/s06-spring-data-jpa/
   description=Loads the lines of each order with a separate query (N+1).
   ```
   A mutant can replace any class, including Spring beans; its classes shadow the real ones on the test classpath.
+  It can't replace a Flyway migration (two `V3` files stop Flyway): to mutate a migration, ship an
+  `afterMigrate.sql` callback in the mutant's `resources/db/migration/` that alters the reference schema (see S05-01).
+- Tests that belong to no exercise (examples the lesson refers to) are recorded with exercise `-`: the score ignores
+  them, but `verify.sh solved` fails if one of them fails.
 
 ### Tests with a database
 
