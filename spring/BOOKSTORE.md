@@ -57,6 +57,8 @@ Member ──< Order ──< OrderLine >── Book >── Category
 | Payments | One `APPROVED` payment for every paid or shipped order (156). Its amount is the order's total, minus the discount for the three orders paid with a coupon. |
 | Reviews | 300, at most one per member and book. Book 1 has 15. |
 
+Tests run with the application's clock stopped at **2026-10-15T00:00:00Z**, so "now" is the same whenever you run them: `WELCOME5000`, `FLASH10000` and `AUTUMN3000` are valid, `EXPIRED2000` has expired, and every seeded order lies in the past. A test can move the clock.
+
 ## Package layout
 
 The code is organized **by feature**, with the usual layers inside each feature:
@@ -94,16 +96,41 @@ The handbook explains each of these rules: [Spring layering](../docs/handbook/sp
 | JSON property names are `camelCase`; times are ISO-8601 strings in UTC | `"orderedAt": "2026-09-14T08:15:00Z"` |
 | Lists are paged with `page` (from 0) and `size` | `GET /api/books?page=0&size=20&sort=price,desc` |
 
+A page of a list:
+
+```json
+{
+  "content": [
+    { "id": 1, "isbn": "9791115881394", "title": "Effective Java", "author": "Joshua Bloch", "category": "Programming", "price": 36000, "publishedDate": "2018-10-18" }
+  ],
+  "page": { "size": 20, "number": 0, "totalElements": 60, "totalPages": 3 }
+}
+```
+
 An error response:
 
 ```json
 {
-  "type": "about:blank",
   "title": "Conflict",
   "status": 409,
   "detail": "Only 3 copies of book 7 are left, but 5 were requested.",
   "instance": "/api/orders",
   "code": "OUT_OF_STOCK"
+}
+```
+
+There is no `type` property: RFC 9457 reads a missing `type` as `about:blank`, which means "the status code says it all". When the input is invalid, `errors` lists every invalid value:
+
+```json
+{
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid request content.",
+  "instance": "/api/orders",
+  "code": "INVALID_INPUT",
+  "errors": [
+    { "field": "lines[0].quantity", "message": "must be greater than or equal to 1" }
+  ]
 }
 ```
 
