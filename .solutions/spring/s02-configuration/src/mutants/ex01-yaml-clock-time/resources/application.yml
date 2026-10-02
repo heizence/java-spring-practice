@@ -1,0 +1,19 @@
+# Mutant: "cutoff-time: 14:00" looks right, but YAML reads 14:00 as the number 840 (14 x 60), which Spring binds as a
+# Duration of 840 milliseconds.
+
+spring:
+  application:
+    name: bookstore
+  main:
+    web-application-type: none
+
+bookstore:
+  shipping:
+    free-threshold: 20000
+    fee: 3000
+    cutoff-time: 14:00
+    supported-regions:
+      - seoul
+      - incheon
+      - gyeonggi
+      - busan
