@@ -43,6 +43,15 @@ public class TestThreadGuard implements BeforeEachCallback, InvocationIntercepto
         invocation.proceed();
     }
 
+    /** {@code @ParameterizedTest} and {@code @RepeatedTest} methods. */
+    @Override
+    public void interceptTestTemplateMethod(Invocation<Void> invocation,
+                                            ReflectiveInvocationContext<Method> invocationContext,
+                                            ExtensionContext extensionContext) throws Throwable {
+        checkThread(extensionContext);
+        invocation.proceed();
+    }
+
     @Override
     public void interceptAfterEachMethod(Invocation<Void> invocation,
                                          ReflectiveInvocationContext<Method> invocationContext,
