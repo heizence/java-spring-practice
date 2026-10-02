@@ -31,6 +31,11 @@ public final class Proxies {
     private Proxies() {
     }
 
+    /**
+     * Returns a proxy that measures every call. It reads {@code ticker} (a clock in nanoseconds, such as
+     * {@code System::nanoTime}) before and after the call, and passes a {@link Timing} with the method's name and the
+     * difference to {@code log}. A call that throws is measured and logged too.
+     */
     public static <T> T timing(Class<T> type, T target, LongSupplier ticker, Consumer<Timing> log) {
         requireInterface(type);
         Objects.requireNonNull(target, "target");
@@ -48,6 +53,22 @@ public final class Proxies {
         return newProxy(type, handler);
     }
 
+    /**
+     * Returns a proxy that runs the methods annotated with {@link Transactional} in a transaction.
+     *
+     * <ol>
+     *   <li>The annotation counts on the interface's method and on the target class's method that implements it.</li>
+     *   <li>Before the call: {@link TxManager#begin()}.</li>
+     *   <li>When the call returns normally: {@link TxManager#commit()}.</li>
+     *   <li>When it throws a {@link RuntimeException} or an {@link Error}: {@link TxManager#rollback()}, then the
+     *       exception reaches the caller.</li>
+     *   <li>When it throws a checked exception: {@link TxManager#commit()}, then the exception reaches the caller.
+     *       That's Spring's default rule: a checked exception counts as an expected business outcome, such as
+     *       "insufficient funds".</li>
+     * </ol>
+     *
+     * <p>Methods without the annotation are forwarded to the target without a transaction.
+     */
     public static <T> T transactional(Class<T> type, T target, TxManager txManager) {
         requireInterface(type);
         Objects.requireNonNull(target, "target");
