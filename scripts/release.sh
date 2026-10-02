@@ -21,7 +21,7 @@ publish() {
   else
     git checkout -q --orphan "$branch"
   fi
-  git rm -rq --ignore-unmatch . > /dev/null
+  git rm -rqf --ignore-unmatch . > /dev/null
   git checkout authoring -- .
   if [[ "$with_solutions" == "yes" ]]; then
     cp -R .solutions/. .
