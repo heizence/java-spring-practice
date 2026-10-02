@@ -365,7 +365,7 @@ static Gatherer<Integer, ?, Integer> takeWhileIncreasing() {
 - Don't use parallel streams in code that handles requests. Spring already serves requests on many threads, and blocking work in the common pool slows the whole application down. See [Concurrency](../../docs/handbook/concurrency.md).
 - Inside a lambda, wrap a checked exception in a meaningful unchecked one instead of hiding it. See [Exceptions](../../docs/handbook/exceptions.md).
 - Keep money in `long` cents or `BigDecimal` in stream code too: `mapToLong(...).sum()`, never `mapToDouble`. See [Dates and money](../../docs/handbook/dates-and-money.md).
-- Plain loops are fine. Reviewers favor whichever version reads best. See [Java style](../../docs/handbook/java-style.md).
+- Plain loops are fine. Reviewers favor whichever version reads best. See "Streams or a loop?" in [Functional style](../../docs/handbook/functional-style.md).
 
 ## Exercises
 
