@@ -110,7 +110,7 @@ try {
 
 Use try-with-resources for everything that is `AutoCloseable`, including the streams that `Files.lines()` returns. TypeScript 5.2 added a similar feature: `using` with `Symbol.dispose`.
 
-Who closes a resource? The code that opened it. When a method receives an open resource, its Javadoc must say whether it closes it. (`ConfigLoader.load(Reader)` in J03-01 says that it does.)
+Who closes a resource? Usually the code that opened it. When a method receives a resource that is already open, its Javadoc must say whether the method closes it. `ConfigLoader.load(Reader)` in J03-01 *takes ownership*: its Javadoc says that it always closes the reader.
 
 ### 5. Chaining: keep the cause
 
@@ -279,6 +279,8 @@ void adds(int a, int b, int expected) {
 | `@EnumSource(Violation.class)` | every constant of an enum, or a selection |
 | `@MethodSource("cases")` | any objects, from a `static Stream<Arguments> cases()` method |
 | `@NullSource`, `@EmptySource`, `@NullAndEmptySource` | `null`, and `""` or an empty collection |
+
+In the `name` of a run, `{0}`, `{1}` and so on stand for the arguments. JUnit 6 puts text arguments in quotes there, and that includes `@CsvSource` values, which are text until JUnit converts them: the second example shows up as `"1" + "1" = "2"`. Add `quoteTextArguments = false` to `@ParameterizedTest` to leave the quotes out.
 
 ### 10. AssertJ and given/when/then
 
@@ -578,7 +580,7 @@ The `void` methods of a mock do nothing by default. To make the mailer fail: `do
 
 ## Further reading
 
-- Dev.java: [Exceptions](https://dev.java/learn/exceptions/), a short official tutorial
+- Dev.java: [Exceptions](https://dev.java/learn/language/annotations-exceptions/exceptions/), a short official tutorial
 - The Java Language Specification, [chapter 11: Exceptions](https://docs.oracle.com/javase/specs/jls/se25/html/jls-11.html), for the exact rules
 - Joshua Bloch, *Effective Java*, 3rd edition, items 69–77 (exceptions)
 - [JUnit User Guide](https://docs.junit.org/current/user-guide/)

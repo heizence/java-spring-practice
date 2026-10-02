@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class ProductNotFoundException extends BusinessException {
 
-    /** For a lookup that simply found nothing, for example an empty {@code Optional}. */
+    /** For a lookup that found nothing, for example an empty {@code Optional}. */
     public ProductNotFoundException(String sku) {
         super(ErrorCode.PRODUCT_NOT_FOUND, Map.of("sku", sku));
     }

@@ -183,7 +183,7 @@ class ConfigLoaderTest {
                     .hasMessageContaining("line 2");
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"=8080", "   = 8080", "\t=\t"})
         @DisplayName("rejects a line with an empty key")
         void emptyKey(String line) {
