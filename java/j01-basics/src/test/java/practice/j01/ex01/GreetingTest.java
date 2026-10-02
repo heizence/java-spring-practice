@@ -121,7 +121,8 @@ class GreetingTest {
         @Test
         @DisplayName("removes full-width spaces (U+3000) around the name, too")
         void stripsFullWidthSpaces() {
-            assertThat(Greeting.format("　민지　", 9)).isEqualTo("Good morning, 민지!");
+            // \u3000 is the full-width space, written as an escape because it looks like an ordinary space.
+            assertThat(Greeting.format("\u3000민지\u3000", 9)).isEqualTo("Good morning, 민지!");
         }
 
         @Test
@@ -146,7 +147,7 @@ class GreetingTest {
             return Stream.of(
                     argumentSet("one space", " "),
                     argumentSet("a tab and a line break", "\t\n"),
-                    argumentSet("two full-width spaces", "　　"));
+                    argumentSet("two full-width spaces", "\u3000\u3000"));
         }
 
         @ParameterizedTest(name = "{argumentSetName}")
