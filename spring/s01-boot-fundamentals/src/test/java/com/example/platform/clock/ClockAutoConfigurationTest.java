@@ -48,7 +48,8 @@ class ClockAutoConfigurationTest {
                 Clock clock = singleBean(context, Clock.class);
                 Instant before = Instant.now().minus(Duration.ofSeconds(1));
 
-                assertThat(clock.getZone()).isEqualTo(ZoneOffset.UTC);
+                // normalized(): the zone "UTC" from the properties and the offset "Z" of Clock.systemUTC() are both UTC.
+                assertThat(clock.getZone().normalized()).isEqualTo(ZoneOffset.UTC);
                 assertThat(clock.instant()).isBetween(before, Instant.now().plus(Duration.ofSeconds(1)));
             });
         }
@@ -105,7 +106,8 @@ class ClockAutoConfigurationTest {
         @DisplayName("an application with @EnableAutoConfiguration gets the clock without mentioning it")
         void foundThroughEnableAutoConfiguration() {
             new ApplicationContextRunner().withUserConfiguration(AnyApplication.class)
-                    .run(context -> assertThat(singleBean(context, Clock.class).getZone()).isEqualTo(ZoneOffset.UTC));
+                    .run(context -> assertThat(singleBean(context, Clock.class).getZone().normalized())
+                            .isEqualTo(ZoneOffset.UTC));
         }
 
         @Test

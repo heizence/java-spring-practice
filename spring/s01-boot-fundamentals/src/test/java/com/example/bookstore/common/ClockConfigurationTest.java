@@ -49,7 +49,7 @@ class ClockConfigurationTest {
 
                 Instant now = clock.instant();
 
-                assertThat(clock.getZone()).isEqualTo(ZoneOffset.UTC);
+                assertThat(clock.getZone().normalized()).as("the clock's time zone").isEqualTo(ZoneOffset.UTC);
                 assertThat(now).isBetween(before, Instant.now().plus(Duration.ofSeconds(1)));
             });
         }
