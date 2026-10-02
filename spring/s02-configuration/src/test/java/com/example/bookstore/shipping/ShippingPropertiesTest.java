@@ -15,14 +15,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
  * Tests how the shipping rules get from the configuration into {@link ShippingProperties}. Each test starts a small
- * application context that reads {@code application.yml} the way {@code SpringApplication} does
- * ({@link ConfigDataApplicationContextInitializer}), and holds what component scanning finds in the shipping package.
+ * application context the way {@code SpringApplication} starts the application, and holds what component scanning
+ * finds in the shipping package.
  */
 @DisplayName("S02-01 · Type-safe configuration properties")
 class ShippingPropertiesTest {
@@ -32,14 +30,19 @@ class ShippingPropertiesTest {
     static class ShippingPackage {
     }
 
-    private final ApplicationContextRunner runner = new ApplicationContextRunner()
-            .withInitializer(new ConfigDataApplicationContextInitializer())
-            .withUserConfiguration(ShippingPackage.class);
+    private final ApplicationContextRunner runner = startWith();
 
-    /** Adds environment variables, such as {@code BOOKSTORE_SHIPPING_FEE=4000}, as a server's environment would. */
-    private static ApplicationContextInitializer<ConfigurableApplicationContext> environment(String... variables) {
-        return context -> TestPropertyValues.of(variables)
-                .applyTo(context.getEnvironment(), TestPropertyValues.Type.SYSTEM_ENVIRONMENT);
+    /**
+     * A runner that starts like the application on a server: the environment variables (such as
+     * {@code BOOKSTORE_SHIPPING_FEE=4000}) are there first, then {@link ConfigDataApplicationContextInitializer} reads
+     * {@code application.yml}, as {@code SpringApplication} does.
+     */
+    private static ApplicationContextRunner startWith(String... environmentVariables) {
+        return new ApplicationContextRunner()
+                .withInitializer(context -> TestPropertyValues.of(environmentVariables)
+                        .applyTo(context.getEnvironment(), TestPropertyValues.Type.SYSTEM_ENVIRONMENT))
+                .withInitializer(new ConfigDataApplicationContextInitializer())
+                .withUserConfiguration(ShippingPackage.class);
     }
 
     @Nested
@@ -57,8 +60,11 @@ class ShippingPropertiesTest {
         @Test
         @DisplayName("ShippingFeeCalculator is a bean that gets the properties injected")
         void calculatorGetsTheProperties() {
-            runner.run(context -> assertThat(singleBean(context, ShippingFeeCalculator.class).feeFor(1_000, Region.SEOUL))
-                    .isEqualTo(3_000));
+            runner.run(context -> {
+                ShippingFeeCalculator calculator = singleBean(context, ShippingFeeCalculator.class);
+
+                assertThat(calculator.feeFor(1_000, Region.SEOUL)).isEqualTo(3_000);
+            });
         }
     }
 
@@ -69,14 +75,14 @@ class ShippingPropertiesTest {
         @Test
         @DisplayName("an environment variable overrides application.yml: BOOKSTORE_SHIPPING_FEE=4000")
         void environmentVariableOverridesTheFile() {
-            runner.withInitializer(environment("BOOKSTORE_SHIPPING_FEE=4000"))
+            startWith("BOOKSTORE_SHIPPING_FEE=4000")
                     .run(context -> assertThat(singleBean(context, ShippingProperties.class).fee()).isEqualTo(4_000));
         }
 
         @Test
-        @DisplayName("an environment variable sets a list as comma-separated values: BOOKSTORE_SHIPPING_SUPPORTEDREGIONS")
+        @DisplayName("an environment variable sets a list as comma-separated values")
         void environmentVariableSetsAList() {
-            runner.withInitializer(environment("BOOKSTORE_SHIPPING_SUPPORTEDREGIONS=busan,jeju"))
+            startWith("BOOKSTORE_SHIPPING_SUPPORTEDREGIONS=busan,jeju")
                     .run(context -> assertThat(singleBean(context, ShippingProperties.class).supportedRegions())
                             .containsExactlyInAnyOrder(Region.BUSAN, Region.JEJU));
         }
