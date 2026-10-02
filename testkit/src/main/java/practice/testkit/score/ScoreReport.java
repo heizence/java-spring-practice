@@ -103,7 +103,12 @@ public final class ScoreReport {
         }
     }
 
-    record ModuleScore(Module module, boolean compileFailed, boolean ran, List<ExerciseScore> exercises) {
+    /**
+     * @param uncataloged exercise IDs that have test results but no heading in the module README, so they are
+     *                    invisible to the learner's score
+     */
+    record ModuleScore(Module module, boolean compileFailed, boolean ran, List<ExerciseScore> exercises,
+                       Set<String> uncataloged) {
 
         long done() {
             return exercises.stream().filter(e -> e.state() == State.DONE).count();
@@ -166,7 +171,11 @@ public final class ScoreReport {
                     return new ExerciseScore(exercise, stateOf(exercise, ran, rows, learner), rows, learner, verification);
                 })
                 .toList();
-        return new ModuleScore(module, compileFailed, ran, exercises);
+        Set<String> cataloged = module.exercises().stream().map(Exercise::id).collect(Collectors.toSet());
+        Set<String> uncataloged = rowsByExercise.keySet().stream()
+                .filter(id -> !cataloged.contains(id))
+                .collect(Collectors.toCollection(java.util.TreeSet::new));
+        return new ModuleScore(module, compileFailed, ran, exercises, uncataloged);
     }
 
     private static State stateOf(Exercise exercise, boolean ran, List<ResultRow> rows, List<MutantResult> learner) {
@@ -346,6 +355,10 @@ public final class ScoreReport {
                 problems.add(module.module().name() + ": no results (compile error or tests not run)");
                 continue;
             }
+            for (String id : module.uncataloged()) {
+                problems.add(module.module().name() + ": tests for " + id + " have no '### " + id
+                        + " · …' heading in README.md, so the score ignores them");
+            }
             for (ExerciseScore score : module.exercises()) {
                 String name = score.exercise().id() + " " + score.exercise().title();
                 ExerciseType type = score.exercise().type();
@@ -378,6 +391,10 @@ public final class ScoreReport {
             if (!module.ran()) {
                 problems.add(module.module().name() + ": no results (compile error or tests not run)");
                 continue;
+            }
+            for (String id : module.uncataloged()) {
+                problems.add(module.module().name() + ": tests for " + id + " have no '### " + id
+                        + " · …' heading in README.md, so the score ignores them");
             }
             for (ExerciseScore score : module.exercises()) {
                 String name = score.exercise().id() + " " + score.exercise().title();

@@ -25,6 +25,15 @@ fi
 
 case "$action" in
   apply)
+    # `reset` restores overlaid files from git and deletes the ones git doesn't know. Uncommitted work in the
+    # target would be lost, so refuse to start from a dirty tree.
+    check_paths=("${target:-java}")
+    [[ -z "$target" && -d spring ]] && check_paths+=(spring)
+    if [[ -n "$(git status --porcelain -- "${check_paths[@]}")" ]]; then
+      echo "Uncommitted changes in ${check_paths[*]}. Commit them first: 'reset' would overwrite or delete them." >&2
+      git status --short -- "${check_paths[@]}" | head -n 10 >&2
+      exit 1
+    fi
     mkdir -p "${target:-.}"
     cp -R "$overlay/." "${target:-.}/"
     echo "Applied $overlay. Run 'scripts/solutions.sh reset${target:+ $target}' before committing."
