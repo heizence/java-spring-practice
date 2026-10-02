@@ -21,7 +21,17 @@ The reference solutions on the `solutions` branch follow these rules. When you c
 
 ## Spring Boot (Part 2)
 
-Pages on layering, DTOs and entities, transactions, REST conventions, error responses, configuration, logging and Lombok arrive with Part 2.
+| Page | What it covers |
+|---|---|
+| [Spring layering](spring-layering.md) | Package by feature, controllers vs services vs repositories, DTOs vs entities, constructor injection |
+| [JPA entities and repositories](jpa-entities.md) | Entity rules, relationships, N+1, the persistence context, open-session-in-view |
+| [Transactions](transactions.md) | Where `@Transactional` goes, rollback rules, propagation, isolation, short transactions |
+| [REST API design](rest-api-design.md) | Paths, methods, status codes, problem-detail errors, validation, paging, versioning |
+| [Configuration](configuration.md) | Property sources, `@ConfigurationProperties`, profiles, secrets |
+| [Logging and observability](logging-and-observability.md) | Log levels, request ids, structured logs, Actuator, metrics |
+| [Lombok](lombok.md) | Which annotations to use, and which never to put on entities |
+| [Testing Spring applications](spring-testing.md) | Unit vs slice vs integration tests, Testcontainers, context caching, data isolation |
+| [Security essentials](security.md) | Authentication vs authorization, passwords, JWT, ownership checks, CSRF and CORS |
 
 ## A note on style guides
 
