@@ -511,7 +511,7 @@ Module S08 continues with concurrency in the database: optimistic and pessimisti
 - Keep the lambdas you pass to `CompletableFuture`, `compute` or `updateAndGet` short and free of side effects. [Functional style](../../docs/handbook/functional-style.md)
 - Return `Optional` for "maybe there is a value", such as the current request id. [Null and Optional](../../docs/handbook/null-and-optional.md)
 - Keep amounts of money in `long` cents or `BigDecimal`, never in `double`. [Dates and money](../../docs/handbook/dates-and-money.md)
-- Keep Spring singleton beans stateless: only `final` fields. [Java style](../../docs/handbook/java-style.md)
+- Keep Spring singleton beans stateless: only `final` fields. [Concurrency](../../docs/handbook/concurrency.md)
 - Test concurrent code under stress: start many threads at the same moment, repeat many times, use timeouts and daemon threads, and check invariants such as "the total amount of money stays the same". A passing test doesn't prove that there is no race, so also check the code against the happens-before rules. [Testing](../../docs/handbook/testing.md)
 
 ## Exercises

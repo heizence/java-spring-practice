@@ -19,7 +19,8 @@ import java.util.function.Supplier;
  *       inside one of these two methods.</li>
  *   <li>Calls can be nested. Inside the inner call, the inner id is current. After it, the outer id is current
  *       again.</li>
- *   <li>Once the action has returned or thrown, its id is no longer current.</li>
+ *   <li>Once the action has returned or thrown, its id is no longer current. An exception from the action reaches
+ *       the caller unchanged.</li>
  *   <li>The id belongs to the thread that runs the action. Other threads don't see it, not even threads that the
  *       action starts itself.</li>
  *   <li>A {@code null} id or action throws {@link NullPointerException}, and a blank id throws
