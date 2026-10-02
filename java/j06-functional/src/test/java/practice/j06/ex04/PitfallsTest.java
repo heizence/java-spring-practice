@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -67,18 +65,6 @@ class PitfallsTest {
         @DisplayName("paidSummary() counts and adds up the paid orders")
         void paidSummary() {
             assertThat(OrderStats.paidSummary(ORDERS)).isEqualTo("2 paid orders, 4200 cents");
-        }
-
-        @Test
-        @DisplayName("shippingLabels() writes a label as id:customer")
-        void shippingLabels() {
-            assertThat(OrderStats.shippingLabels(List.of(A1))).containsExactly("A-1:mina");
-        }
-
-        @Test
-        @DisplayName("countAndAudit() returns the number of orders")
-        void countAndAuditCounts() {
-            assertThat(OrderStats.countAndAudit(ORDERS, id -> { })).isEqualTo(5);
         }
 
         @Test
@@ -152,29 +138,6 @@ class PitfallsTest {
         }
 
         @Test
-        @DisplayName("shippingLabels() keeps the order of the orders, even for a batch of 10,000")
-        void shippingLabelsKeepOrder() {
-            List<Order> batch = IntStream.range(0, 10_000)
-                    .mapToObj(i -> new Order("B-" + i, "customer-" + i % 7, true, i))
-                    .toList();
-            List<String> expected = IntStream.range(0, 10_000)
-                    .mapToObj(i -> "B-" + i + ":customer-" + i % 7)
-                    .toList();
-
-            assertThat(OrderStats.shippingLabels(batch)).isEqualTo(expected);
-        }
-
-        @Test
-        @DisplayName("countAndAudit() writes every order id to the audit log, in order")
-        void countAndAuditWritesLog() {
-            List<String> auditLog = new ArrayList<>();
-
-            OrderStats.countAndAudit(ORDERS, auditLog::add);
-
-            assertThat(auditLog).containsExactly("A-1", "A-2", "A-3", "A-4", "A-5");
-        }
-
-        @Test
         @DisplayName("customersInOrderOfFirstOrder() keeps the order of each customer's first order")
         void customersKeepFirstOrder() {
             assertThat(OrderStats.customersInOrderOfFirstOrder(ORDERS)).containsExactly("mina", "jun", "ari");
@@ -183,12 +146,7 @@ class PitfallsTest {
         @Test
         @DisplayName("empty batches give empty results")
         void emptyBatches() {
-            List<String> auditLog = new ArrayList<>();
-
-            assertThat(OrderStats.shippingLabels(List.of())).isEmpty();
             assertThat(OrderStats.customersInOrderOfFirstOrder(List.of())).isEmpty();
-            assertThat(OrderStats.countAndAudit(List.of(), auditLog::add)).isZero();
-            assertThat(auditLog).isEmpty();
         }
     }
 
@@ -225,9 +183,6 @@ class PitfallsTest {
         @DisplayName("every OrderStats method rejects a null list")
         void orderStatsRejectNull() {
             assertThatThrownBy(() -> OrderStats.paidSummary(null)).isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> OrderStats.shippingLabels(null)).isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> OrderStats.countAndAudit(null, id -> { }))
-                    .isInstanceOf(NullPointerException.class);
             assertThatThrownBy(() -> OrderStats.customersInOrderOfFirstOrder(null))
                     .isInstanceOf(NullPointerException.class);
         }

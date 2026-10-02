@@ -477,13 +477,11 @@ The shop's customer and order code compiles and looks reasonable, but it's full 
 2. "Looking up an unknown customer gives `NoSuchElementException: No value present`. Which customer?"
 3. "The pricing service gets a request for every checkout, even for customers with a contract discount."
 4. "The summary of paid orders throws `IllegalStateException`."
-5. "Shipping labels come out shuffled for big batches, and sometimes one is missing."
-6. "The audit log stays empty, although the orders were counted."
-7. "The customer list should show customers in the order of their first order. The order looks random."
+5. "The customer list should show customers in the order of their first order. The order looks random."
 
 Each failing test shows one symptom. Fix the code, not the tests.
 
-**You'll practice:** `Optional.ofNullable`, `orElse` versus `orElseGet`, `orElseThrow` with your own exception, why `Optional` fields cause trouble, the single-use rule of streams, side effects in parallel streams, why `peek` isn't for real work, and order in hash-based collections.
+**You'll practice:** `Optional.ofNullable`, `orElse` versus `orElseGet`, `orElseThrow` with your own exception, why `Optional` fields cause trouble, the single-use rule of streams, and order in hash-based collections. Two more pitfalls, `peek` and side effects in parallel streams, are in lesson section 11 and the review questions.
 
 **Rules:** the Javadoc of each class describes the intended behavior.
 
@@ -502,7 +500,7 @@ Java evaluates every argument before it calls a method. What does that mean for 
 <details>
 <summary>Hint 3</summary>
 
-For the four bugs in `OrderStats`, read lesson sections 6 and 11 again. Each fix makes the code shorter.
+For the two bugs in `OrderStats`, read lesson sections 6 and 11 again. Each fix makes the code shorter.
 </details>
 
 **Done?** Compare with the reference on the `solutions` branch, then ask yourself: For each bug, can you explain in one sentence why the code looked right to the person who wrote it?
