@@ -152,73 +152,73 @@ class PuzzlesTest {
         @Test
         @DisplayName("ArrayList: get(i)")
         void arrayListGetByIndex() {
-            Predict.check(Answers.ARRAY_LIST_GET_BY_INDEX, BigO.O_1);
+            Predict.checkAnswer(Answers.ARRAY_LIST_GET_BY_INDEX, BigO.O_1);
         }
 
         @Test
         @DisplayName("ArrayList: add(x), on average")
         void arrayListAddAtEnd() {
-            Predict.check(Answers.ARRAY_LIST_ADD_AT_END, BigO.O_1);
+            Predict.checkAnswer(Answers.ARRAY_LIST_ADD_AT_END, BigO.O_1);
         }
 
         @Test
         @DisplayName("ArrayList: add(0, x)")
         void arrayListAddAtFront() {
-            Predict.check(Answers.ARRAY_LIST_ADD_AT_FRONT, BigO.O_N);
+            Predict.checkAnswer(Answers.ARRAY_LIST_ADD_AT_FRONT, BigO.O_N);
         }
 
         @Test
         @DisplayName("ArrayList: contains(x)")
         void arrayListContains() {
-            Predict.check(Answers.ARRAY_LIST_CONTAINS, BigO.O_N);
+            Predict.checkAnswer(Answers.ARRAY_LIST_CONTAINS, BigO.O_N);
         }
 
         @Test
         @DisplayName("LinkedList: get(n / 2)")
         void linkedListGetByIndex() {
-            Predict.check(Answers.LINKED_LIST_GET_BY_INDEX, BigO.O_N);
+            Predict.checkAnswer(Answers.LINKED_LIST_GET_BY_INDEX, BigO.O_N);
         }
 
         @Test
         @DisplayName("LinkedList: addFirst(x)")
         void linkedListAddFirst() {
-            Predict.check(Answers.LINKED_LIST_ADD_FIRST, BigO.O_1);
+            Predict.checkAnswer(Answers.LINKED_LIST_ADD_FIRST, BigO.O_1);
         }
 
         @Test
         @DisplayName("HashMap: get(key)")
         void hashMapGet() {
-            Predict.check(Answers.HASH_MAP_GET, BigO.O_1);
+            Predict.checkAnswer(Answers.HASH_MAP_GET, BigO.O_1);
         }
 
         @Test
         @DisplayName("TreeMap: get(key)")
         void treeMapGet() {
-            Predict.check(Answers.TREE_MAP_GET, BigO.O_LOG_N);
+            Predict.checkAnswer(Answers.TREE_MAP_GET, BigO.O_LOG_N);
         }
 
         @Test
         @DisplayName("PriorityQueue: peek()")
         void priorityQueuePeek() {
-            Predict.check(Answers.PRIORITY_QUEUE_PEEK, BigO.O_1);
+            Predict.checkAnswer(Answers.PRIORITY_QUEUE_PEEK, BigO.O_1);
         }
 
         @Test
         @DisplayName("PriorityQueue: poll()")
         void priorityQueuePoll() {
-            Predict.check(Answers.PRIORITY_QUEUE_POLL, BigO.O_LOG_N);
+            Predict.checkAnswer(Answers.PRIORITY_QUEUE_POLL, BigO.O_LOG_N);
         }
 
         @Test
         @DisplayName("PriorityQueue: contains(x)")
         void priorityQueueContains() {
-            Predict.check(Answers.PRIORITY_QUEUE_CONTAINS, BigO.O_N);
+            Predict.checkAnswer(Answers.PRIORITY_QUEUE_CONTAINS, BigO.O_N);
         }
 
         @Test
         @DisplayName("ArrayList: sort(comparator)")
         void arrayListSort() {
-            Predict.check(Answers.ARRAY_LIST_SORT, BigO.O_N_LOG_N);
+            Predict.checkAnswer(Answers.ARRAY_LIST_SORT, BigO.O_N_LOG_N);
         }
     }
 }

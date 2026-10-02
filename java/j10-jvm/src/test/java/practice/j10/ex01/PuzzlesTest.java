@@ -24,43 +24,43 @@ class PuzzlesTest {
         @Test
         @DisplayName("the parameter quantity")
         void parameter() {
-            Predict.check(Answers.PARAMETER_QUANTITY, Expected.PARAMETER_QUANTITY);
+            Predict.checkAnswer(Answers.PARAMETER_QUANTITY, Expected.PARAMETER_QUANTITY);
         }
 
         @Test
         @DisplayName("the local variable unitPrice")
         void localVariable() {
-            Predict.check(Answers.LOCAL_UNIT_PRICE, Expected.LOCAL_UNIT_PRICE);
+            Predict.checkAnswer(Answers.LOCAL_UNIT_PRICE, Expected.LOCAL_UNIT_PRICE);
         }
 
         @Test
         @DisplayName("the variable order")
         void referenceVariable() {
-            Predict.check(Answers.ORDER_VARIABLE, Expected.ORDER_VARIABLE);
+            Predict.checkAnswer(Answers.ORDER_VARIABLE, Expected.ORDER_VARIABLE);
         }
 
         @Test
         @DisplayName("the Order object that order refers to")
         void object() {
-            Predict.check(Answers.ORDER_OBJECT, Expected.ORDER_OBJECT);
+            Predict.checkAnswer(Answers.ORDER_OBJECT, Expected.ORDER_OBJECT);
         }
 
         @Test
         @DisplayName("the field id inside the Order object")
         void primitiveField() {
-            Predict.check(Answers.ORDER_ID_FIELD, Expected.ORDER_ID_FIELD);
+            Predict.checkAnswer(Answers.ORDER_ID_FIELD, Expected.ORDER_ID_FIELD);
         }
 
         @Test
         @DisplayName("the numbers 5, 4 and 3 in the array")
         void arrayElements() {
-            Predict.check(Answers.ARRAY_ELEMENTS, Expected.ARRAY_ELEMENTS);
+            Predict.checkAnswer(Answers.ARRAY_ELEMENTS, Expected.ARRAY_ELEMENTS);
         }
 
         @Test
         @DisplayName("the static field Order.created")
         void staticField() {
-            Predict.check(Answers.STATIC_COUNTER, Expected.STATIC_COUNTER);
+            Predict.checkAnswer(Answers.STATIC_COUNTER, Expected.STATIC_COUNTER);
         }
     }
 
@@ -71,31 +71,31 @@ class PuzzlesTest {
         @Test
         @DisplayName("reassigned(): is Order 1 eligible?")
         void reassigned() {
-            Predict.check(Answers.REASSIGNED, Expected.REASSIGNED);
+            Predict.checkAnswer(Answers.REASSIGNED, Expected.REASSIGNED);
         }
 
         @Test
         @DisplayName("secondReference(): is Order 1 eligible?")
         void secondReference() {
-            Predict.check(Answers.SECOND_REFERENCE, Expected.SECOND_REFERENCE);
+            Predict.checkAnswer(Answers.SECOND_REFERENCE, Expected.SECOND_REFERENCE);
         }
 
         @Test
         @DisplayName("cycle(): are the two nodes eligible?")
         void cycle() {
-            Predict.check(Answers.CYCLE, Expected.CYCLE);
+            Predict.checkAnswer(Answers.CYCLE, Expected.CYCLE);
         }
 
         @Test
         @DisplayName("staticList(): is Order 1 eligible?")
         void staticList() {
-            Predict.check(Answers.STATIC_LIST, Expected.STATIC_LIST);
+            Predict.checkAnswer(Answers.STATIC_LIST, Expected.STATIC_LIST);
         }
 
         @Test
         @DisplayName("innerObject(): is the Report eligible?")
         void innerObject() {
-            Predict.check(Answers.INNER_OBJECT, Expected.INNER_OBJECT);
+            Predict.checkAnswer(Answers.INNER_OBJECT, Expected.INNER_OBJECT);
         }
     }
 
@@ -147,25 +147,25 @@ class PuzzlesTest {
         @Test
         @DisplayName("NullPointerException: where was it thrown?")
         void npeThrownAt() {
-            Predict.check(Answers.NPE_THROWN_AT, Expected.NPE_THROWN_AT);
+            Predict.checkAnswer(Answers.NPE_THROWN_AT, Expected.NPE_THROWN_AT);
         }
 
         @Test
         @DisplayName("NullPointerException: where did the null come from?")
         void npeNullCameFrom() {
-            Predict.check(Answers.NPE_NULL_CAME_FROM, Expected.NPE_NULL_CAME_FROM);
+            Predict.checkAnswer(Answers.NPE_NULL_CAME_FROM, Expected.NPE_NULL_CAME_FROM);
         }
 
         @Test
         @DisplayName("UnsupportedOperationException: which line of your code do you open first?")
         void firstLineOfYourCode() {
-            Predict.check(Answers.FIRST_LINE_OF_YOUR_CODE, Expected.FIRST_LINE_OF_YOUR_CODE);
+            Predict.checkAnswer(Answers.FIRST_LINE_OF_YOUR_CODE, Expected.FIRST_LINE_OF_YOUR_CODE);
         }
 
         @Test
         @DisplayName("Caused by: where in your code did the original problem happen?")
         void rootCause() {
-            Predict.check(Answers.ROOT_CAUSE_IN_YOUR_CODE, Expected.ROOT_CAUSE_IN_YOUR_CODE);
+            Predict.checkAnswer(Answers.ROOT_CAUSE_IN_YOUR_CODE, Expected.ROOT_CAUSE_IN_YOUR_CODE);
         }
     }
 }
