@@ -14,7 +14,8 @@ import java.util.Optional;
  *   <li>{@code capacity} must be at least 1. Otherwise the constructor throws {@link IllegalArgumentException}.</li>
  *   <li>Both {@link #get} (when the key is present) and {@link #put} count as <em>using</em> an entry.</li>
  *   <li>Putting a <em>new</em> key into a full cache first evicts the least recently used entry.</li>
- *   <li>Putting an <em>existing</em> key replaces its value and marks it as most recently used. Nothing is evicted.</li>
+ *   <li>Putting an <em>existing</em> key replaces its value and marks it as most recently used. Nothing is
+ *       evicted.</li>
  *   <li>Getting a missing key returns {@link Optional#empty()} and changes nothing.</li>
  *   <li>{@code null} keys and values are rejected with {@link NullPointerException}.</li>
  *   <li>{@link #keys()} returns the keys from least to most recently used, as an unmodifiable snapshot:
@@ -29,6 +30,7 @@ public class LruCache<K, V> {
     private final int capacity;
     private final Map<K, V> entries;
 
+    /** Creates an empty cache that holds at most {@code capacity} entries. */
     public LruCache(int capacity) {
         // Validate first: an object should never exist in a state that breaks its rules.
         if (capacity < 1) {
@@ -47,26 +49,31 @@ public class LruCache<K, V> {
         };
     }
 
+    /** Returns the value stored for {@code key}, or empty if there is none. */
     public Optional<V> get(K key) {
         Objects.requireNonNull(key, "key");
         // Values are never null (put() rejects them), so a null here can only mean "absent".
         return Optional.ofNullable(entries.get(key));
     }
 
+    /** Stores {@code value} under {@code key}, evicting the least recently used entry if needed. */
     public void put(K key, V value) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(value, "value");
         entries.put(key, value);
     }
 
+    /** Number of entries currently in the cache. */
     public int size() {
         return entries.size();
     }
 
+    /** The capacity passed to the constructor. */
     public int capacity() {
         return capacity;
     }
 
+    /** The keys, from least to most recently used. */
     public List<K> keys() {
         // List.copyOf makes an unmodifiable copy, so callers can neither change the cache through it
         // nor see later changes.

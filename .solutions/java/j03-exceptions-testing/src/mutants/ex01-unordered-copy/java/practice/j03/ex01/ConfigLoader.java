@@ -40,6 +40,10 @@ import java.util.Objects;
  *       copy-paste mistake. The message contains the key and {@code line N} for the second occurrence.</li>
  *   <li>An {@link java.io.IOException} while reading or closing becomes a {@code ConfigException} with the
  *       {@code IOException} as its cause.</li>
+ *   <li>If closing fails after an earlier failure (a malformed line, or an {@code IOException} while reading),
+ *       the earlier failure is reported as described above. The {@code IOException} from closing isn't lost: it
+ *       is attached to the earlier exception as a <em>suppressed</em> exception
+ *       ({@link Throwable#getSuppressed()}).</li>
  *   <li>{@code null} arguments throw {@link NullPointerException}.</li>
  * </ul>
  */

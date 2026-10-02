@@ -78,7 +78,7 @@ class PaymentMethodTest {
             assertThat(transfer).isEqualTo(new BankTransfer("088", "123456789012"));
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"1234567890", "12345678901234", "1234-5678-90", "-1234567890-"})
         @DisplayName("BankTransfer accepts 10 to 14 digits")
         void accountNumberBoundaries(String accountNumber) {
@@ -104,7 +104,7 @@ class PaymentMethodTest {
     @DisplayName("Errors")
     class Errors {
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"", "123", "12345", "12a4", " 4242", "4242 ", "４２４２"})
         @DisplayName("Card rejects last4 unless it is exactly 4 ASCII digits")
         void invalidLast4(String last4) {
@@ -113,7 +113,7 @@ class PaymentMethodTest {
                     .hasMessageContaining(last4);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"", "04", "0044", "0a4", "0-4"})
         @DisplayName("BankTransfer rejects a bank code unless it is exactly 3 ASCII digits")
         void invalidBankCode(String bankCode) {
@@ -122,7 +122,7 @@ class PaymentMethodTest {
                     .hasMessageContaining(bankCode);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"", "----------", "123456789", "123456789012345", "12345-6789", "123456789O"})
         @DisplayName("BankTransfer rejects an account number without 10 to 14 digits")
         void invalidAccountNumber(String accountNumber) {

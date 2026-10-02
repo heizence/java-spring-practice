@@ -36,7 +36,7 @@ class IsbnTest {
             assertThat(isbn.digits()).isEqualTo(PLAIN);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {
                 WITH_HYPHENS, WITH_SPACES, "978-0 306-40615 7", "  9780306406157  ", "978--0306406157-"})
         @DisplayName("removes hyphens and spaces")
@@ -199,14 +199,14 @@ class IsbnTest {
             assertThatThrownBy(() -> new Isbn(null)).isInstanceOf(NullPointerException.class);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"", " ", "---", "978030640615", "97803064061570", "978-0-306-40615", "0-306-40615-2"})
         @DisplayName("rejects input that doesn't have exactly 13 digits")
         void rejectsWrongLength(String text) {
             assertThatThrownBy(() -> new Isbn(text)).isInstanceOf(IllegalArgumentException.class);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {
                 "978030640615X", "978.0.306.40615.7", "978_0306406157", "978\t0306406157", "978/0306406157"})
         @DisplayName("rejects characters other than digits, hyphens and spaces")
@@ -214,7 +214,7 @@ class IsbnTest {
             assertThatThrownBy(() -> new Isbn(text)).isInstanceOf(IllegalArgumentException.class);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"9780306406158", "9780306406150", "9780306406175"})
         @DisplayName("rejects a wrong check digit")
         void rejectsWrongCheckDigit(String text) {

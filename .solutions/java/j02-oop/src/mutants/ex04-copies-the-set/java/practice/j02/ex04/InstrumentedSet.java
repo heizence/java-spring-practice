@@ -25,7 +25,7 @@ import java.util.Set;
  *
  * @param <E> the element type
  */
-public class InstrumentedSet<E> implements Set<E> {
+public final class InstrumentedSet<E> implements Set<E> {
 
     // Composition: the wrapped set is a private field, not a superclass. This class sees only the public methods
     // of Set, so how the wrapped set works inside (for example, whether its addAll calls its own add) can't

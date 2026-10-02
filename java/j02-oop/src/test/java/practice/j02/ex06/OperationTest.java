@@ -18,21 +18,21 @@ class OperationTest {
     @DisplayName("Basic")
     class Basic {
 
-        @ParameterizedTest(name = "{0} has symbol {1}")
+        @ParameterizedTest(name = "{0} has symbol {1}", quoteTextArguments = false)
         @CsvSource({"PLUS, +", "MINUS, -", "TIMES, *", "DIVIDE, /"})
         @DisplayName("each operation has its symbol")
         void symbols(Operation operation, String symbol) {
             assertThat(operation.symbol()).isEqualTo(symbol);
         }
 
-        @ParameterizedTest(name = "7 {0} 3 = {1}")
+        @ParameterizedTest(name = "7 {0} 3 = {1}", quoteTextArguments = false)
         @CsvSource({"PLUS, 10", "MINUS, 4", "TIMES, 21", "DIVIDE, 2"})
         @DisplayName("apply() computes the result")
         void apply(Operation operation, long expected) {
             assertThat(operation.apply(7, 3)).isEqualTo(expected);
         }
 
-        @ParameterizedTest(name = "\"{0}\" is {1}")
+        @ParameterizedTest(name = "\"{0}\" is {1}", quoteTextArguments = false)
         @CsvSource({"+, PLUS", "-, MINUS", "*, TIMES", "/, DIVIDE"})
         @DisplayName("fromSymbol() finds the operation for a symbol")
         void fromSymbol(String symbol, Operation expected) {
@@ -81,7 +81,7 @@ class OperationTest {
     @DisplayName("Errors")
     class Errors {
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"%", "", " +", "+ ", "plus", "PLUS", "÷", "**"})
         @DisplayName("fromSymbol() rejects an unknown symbol and names it in the message")
         void unknownSymbol(String symbol) {
@@ -96,7 +96,7 @@ class OperationTest {
             assertThatThrownBy(() -> Operation.fromSymbol(null)).isInstanceOf(NullPointerException.class);
         }
 
-        @ParameterizedTest(name = "{0}({1}, {2})")
+        @ParameterizedTest(name = "{0}({1}, {2})", quoteTextArguments = false)
         @CsvSource({
             "PLUS, 9223372036854775807, 1",
             "MINUS, -9223372036854775808, 1",

@@ -7,7 +7,7 @@ import practice.j01.ex02.Puzzles.Outcome;
  * {@link Puzzles} returns, then run {@code PuzzlesTest}.
  *
  * <p>The constant's type tells you what kind of literal to write. For example {@code 3} for an
- * {@code Integer}, {@code 3L} for a {@code Long}, {@code 'x'} for a {@code Character}, {@code "x"} for a
+ * {@code Integer}, {@code 3.5} for a {@code Double}, {@code 'x'} for a {@code Character}, {@code "x"} for a
  * {@code String}, {@code true}/{@code false} for a {@code Boolean}, and {@code Outcome.RETURNS_NORMALLY} for an
  * {@code Outcome}. If the compiler complains about a literal, that's a clue, too.
  */
@@ -20,7 +20,7 @@ final class Answers {
     static final Integer INTEGER_DIVISION = null;
     static final Integer REMAINDER_OF_NEGATIVE = null;
     static final Integer OVERFLOW = null;
-    static final Long MULTIPLY_BEFORE_WIDENING = null;
+    static final Boolean MULTIPLY_BEFORE_WIDENING = null;
     static final Double FLOATING_POINT = null;
     static final Integer CAST_TRUNCATES = null;
     static final Double DOUBLE_DIVISION_BY_ZERO = null;

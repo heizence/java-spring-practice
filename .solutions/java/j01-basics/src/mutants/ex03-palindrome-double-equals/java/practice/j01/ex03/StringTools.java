@@ -78,7 +78,7 @@ public final class StringTools {
      * "We sent a code to m***@example.com".
      *
      * <ul>
-     *   <li>Keeps the first character before the {@code @}, then writes exactly three asterisks, then the {@code @}
+     *   <li>Keeps the first character of the address, then writes exactly three asterisks, then the {@code @}
      *       and everything after it: {@code "minji.kim@example.com"} → {@code "m***@example.com"}.</li>
      *   <li>It's always three asterisks, so the result doesn't reveal how long the name is:
      *       {@code "a@example.com"} → {@code "a***@example.com"}.</li>

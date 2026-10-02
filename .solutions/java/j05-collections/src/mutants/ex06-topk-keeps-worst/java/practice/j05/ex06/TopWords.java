@@ -28,7 +28,7 @@ public final class TopWords {
      * <h2>Rules</h2>
      * <ul>
      *   <li>Words with the same count are in alphabetical order ({@code String.compareTo}). This also decides
-     *       which words make the cut when several words tie for the last place.</li>
+     *       which words are kept when several words tie for the last place.</li>
      *   <li>Words are compared exactly as they are: {@code "Java"} and {@code "java"} are different words.</li>
      *   <li>If there are fewer than {@code k} different words, the result contains all of them.</li>
      *   <li>The result is an unmodifiable list. An empty input gives an empty list.</li>
