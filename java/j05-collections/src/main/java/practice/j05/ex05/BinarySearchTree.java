@@ -15,13 +15,11 @@ import java.util.Optional;
  * <ul>
  *   <li>Keys are ordered by their {@code compareTo}. {@link #add} ignores a key that is already in the tree
  *       and returns {@code false}; otherwise it returns {@code true}.</li>
- *   <li>{@link #min()} and {@link #max()} return empty for an empty tree.</li>
+ *   <li>{@link #min()} returns empty for an empty tree.</li>
  *   <li>{@link #floor} returns the largest key that is less than or equal to the given key, or empty if every
  *       key is larger.</li>
  *   <li>{@link #inOrder()} returns all keys from smallest to largest, as an unmodifiable snapshot: keys added
  *       later don't show up in a list you already have.</li>
- *   <li>{@link #height()} is the number of nodes on the longest path from the root down to a leaf: 0 for an
- *       empty tree, 1 for a tree with one node.</li>
  *   <li>{@code null} keys are rejected with {@link NullPointerException}.</li>
  * </ul>
  *
@@ -53,12 +51,6 @@ public class BinarySearchTree<K extends Comparable<K>> {
         throw new UnsupportedOperationException("TODO: J05-05");
     }
 
-    /** The largest key, or empty if the tree is empty. */
-    public Optional<K> max() {
-        // TODO: J05-05
-        throw new UnsupportedOperationException("TODO: J05-05");
-    }
-
     /** The largest key that is less than or equal to {@code key}, or empty if there is none. */
     public Optional<K> floor(K key) {
         // TODO: J05-05
@@ -67,12 +59,6 @@ public class BinarySearchTree<K extends Comparable<K>> {
 
     /** All keys, from smallest to largest. */
     public List<K> inOrder() {
-        // TODO: J05-05
-        throw new UnsupportedOperationException("TODO: J05-05");
-    }
-
-    /** The number of nodes on the longest path from the root to a leaf; 0 for an empty tree. */
-    public int height() {
         // TODO: J05-05
         throw new UnsupportedOperationException("TODO: J05-05");
     }
