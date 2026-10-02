@@ -12,7 +12,7 @@ Spring Boot collects configuration from many *property sources* into one `Enviro
 
 1. `application.yml` inside the jar
 2. `application-{profile}.yml` inside the jar, for each active profile (section 9)
-3. `application.yml` outside the jar: in the working directory, or in a `config/` folder next to it
+3. `application.yml` outside the jar: in the working directory, or in its `config/` folder
 4. `application-{profile}.yml` outside the jar
 5. operating-system environment variables: `BOOKSTORE_SHIPPING_FEE=4000`
 6. Java system properties: `java -Dbookstore.shipping.fee=4000 -jar bookstore.jar`
@@ -59,7 +59,7 @@ Spring Boot matches property names loosely, so each source can use its own conve
 | also accepted in files | `bookstore.shipping.freeThreshold`, `bookstore.shipping.free_threshold` |
 | environment variables | `BOOKSTORE_SHIPPING_FREETHRESHOLD` |
 
-The rule for environment variables: upper case, dots become underscores, and dashes disappear. A list can be one comma-separated value, `BOOKSTORE_SHIPPING_SUPPORTEDREGIONS=seoul,busan`, or one variable per index, `BOOKSTORE_SHIPPING_SUPPORTEDREGIONS_0_=seoul`. Enum values are relaxed too: `seoul`, `Seoul` and `SEOUL` all bind to `Region.SEOUL`.
+The rule for environment variables: upper case, dots become underscores, and dashes disappear. A list is one comma-separated value: `BOOKSTORE_SHIPPING_SUPPORTEDREGIONS=seoul,busan`. Enum values are relaxed too: `seoul`, `Seoul` and `SEOUL` all bind to `Region.SEOUL`.
 
 ### 4. Type-safe properties with @ConfigurationProperties
 
@@ -116,14 +116,29 @@ Now the YAML trap from section 2 bites: `cutoff-time: 14:00` gives the number 84
 
 ### 6. Validation at startup
 
-With `@Validated` on the record and `spring-boot-starter-validation` on the classpath, Spring Boot checks the Jakarta Bean Validation constraints (`@NotNull`, `@NotBlank`, `@Positive`, `@Min`, `@Max`, `@NotEmpty`, `@Pattern`, `@Email`, …) as it binds. A broken value stops the application:
+With `@Validated` on the record and `spring-boot-starter-validation` on the classpath, Spring Boot checks the Jakarta Bean Validation constraints (`@NotNull`, `@NotBlank`, `@Positive`, `@Min`, `@Max`, `@NotEmpty`, `@Pattern`, `@Email`, …) as it binds. A broken value stops the application. Started with `--bookstore.shipping.fee=-1`, the bookstore prints:
 
 ```
-Binding validation errors on bookstore.shipping
-   - Field error in object 'bookstore.shipping' on field 'fee': rejected value [-1]; … default message [must be greater than 0]; origin "bookstore.shipping.fee" from property source "systemEnvironment"
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Binding to target com.example.bookstore.shipping.ShippingProperties failed:
+
+    Property: bookstore.shipping.fee
+    Value: "-1"
+    Origin: "bookstore.shipping.fee" from property source "commandLineArgs"
+    Reason: must be greater than 0
+
+
+Action:
+
+Update your application's configuration
 ```
 
-The message names the property, the rule and even the source of the bad value. That's the point: a typo stops the deployment, instead of every order in production being charged a negative fee. For a nested record, put `@Valid` on the component so its own constraints are checked too.
+The report names the property, the bad value, the rule, and even the source the value came from. That's the point: a typo stops the deployment, instead of every order in production being charged a negative fee. For a nested record, put `@Valid` on the component so its own constraints are checked too.
 
 ### 7. The configuration processor
 
@@ -133,7 +148,7 @@ Add Spring Boot's annotation processor to the build:
 annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 ```
 
-At compile time it writes `META-INF/spring-configuration-metadata.json`: every property of every `@ConfigurationProperties` class, with its type, default and description (taken from the `@param` Javadoc of a record). IntelliJ IDEA reads it to complete property names in `application.yml`, show their documentation and flag unknown ones. This module's [`build.gradle.kts`](build.gradle.kts) includes it; after a build, look into `build/classes/java/main/META-INF/`.
+At compile time it writes `META-INF/spring-configuration-metadata.json`: every property of every `@ConfigurationProperties` class, with its type, default and description (taken from the `@param` Javadoc of a record). IDEs with Spring support, such as IntelliJ IDEA and VS Code with the Spring Boot extension, read it to complete property names in `application.yml`, show their documentation and flag unknown ones. This module's [`build.gradle.kts`](build.gradle.kts) includes it; after a build, look into `build/classes/java/main/META-INF/`.
 
 ### 8. @Value, and why to prefer properties records
 
@@ -184,7 +199,7 @@ spring:
         - prod-mail
 ```
 
-`spring.profiles.active` and `spring.profiles.group` belong in `application.yml`: inside a profile-specific file, Spring Boot rejects them with an `InvalidConfigDataPropertyException`, because a profile can't switch on profiles after the files have been chosen.
+`spring.profiles.active` and `spring.profiles.default` belong in `application.yml` (or outside the files altogether): inside a profile-specific file, Spring Boot rejects them with an `InvalidConfigDataPropertyException`, because a profile-specific file can't change which profiles are active after the files have been chosen.
 
 **Choose safe defaults.** Think about what happens when someone forgets to set the profile on a server. If production behavior needs `@Profile("prod")`, a forgotten profile quietly runs the server with development settings, such as a fake mail sender. If only `@Profile("local")` switches on the fakes, a forgotten profile gives production behavior, and a missing secret stops the application loudly. Keep profiles few and environment-shaped, and use them to choose infrastructure, not business rules. A feature switch is a property with `@ConditionalOnProperty` (S01). See [Configuration](../../docs/handbook/configuration.md).
 
@@ -370,4 +385,4 @@ A record's `toString()` can be overridden like any method: `return "MailApiPrope
 - [Generating your own metadata with the annotation processor](https://docs.spring.io/spring-boot/specification/configuration-metadata/annotation-processor.html)
 - [The Twelve-Factor App: Config](https://12factor.net/config): why configuration belongs in the environment
 - [Jakarta Bean Validation constraints](https://jakarta.ee/specifications/bean-validation/3.1/apidocs/jakarta/validation/constraints/package-summary): every built-in constraint annotation
-- [The YAML 1.1 type rules](https://yaml.org/type/): where `no`, `014` and `14:00` get their surprising meanings
+- The YAML 1.1 rules for [integers](https://yaml.org/type/int.html) and [booleans](https://yaml.org/type/bool.html): where `14:00`, `01234` and `no` get their surprising meanings
