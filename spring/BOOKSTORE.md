@@ -51,11 +51,11 @@ Member ──< Order ──< OrderLine >── Book >── Category
 | Categories | 6: Programming (1), Databases (2), Software Architecture (3), Fiction (4), Science (5), Self-Help (6) |
 | Books | 60. Book 1 is *Effective Java* by Joshua Bloch, 36,000 won, 10 in stock. Books 59 (*Range*) and 60 (*Ultralearning*) are out of stock. Books 41 and 42 have Korean titles (*진달래꽃*, *운수 좋은 날*). |
 | Members | 20, all with the password `bookstore123`. Member 1 is Minji Kim (`minji@example.com`). Member 20 is the administrator (`admin@example.com`, role `ADMIN`). |
-| Wallets | One per member. Minji's balance is 100,000 won; the admin's is 0. |
-| Coupons | `WELCOME5000` (1,000 total, issued to members 1–15) · `FLASH10000` (only 10, none issued yet, valid in October 2026) · `AUTUMN3000` (500 total, issued to members 1–10) · `EXPIRED2000` (expired on 2026-03-31) |
+| Wallets | One per member. Minji's balance is 100,000 won; the admin's is 0. Each wallet's history adds up to its balance: a `CHARGE` when the member joined, then a `PAYMENT` for each approved payment. |
+| Coupons | `WELCOME5000` (1,000 total, issued to members 1–15; members 2 and 3 used theirs) · `FLASH10000` (only 10, none issued yet, valid in October 2026) · `AUTUMN3000` (500 total, issued to members 1–10; Minji used hers) · `EXPIRED2000` (valid in July and August 2026 only; members 2–6 received it and never used it) |
 | Orders | 200 orders with 357 lines from August and September 2026: 108 `PAID`, 48 `SHIPPED`, 33 `PENDING`, 11 `CANCELLED`. Minji has 14 of them. |
-| Payments | One `APPROVED` payment for every paid or shipped order (156). |
-| Reviews | 300. Book 1 has 15. |
+| Payments | One `APPROVED` payment for every paid or shipped order (156). Its amount is the order's total, minus the discount for the three orders paid with a coupon. |
+| Reviews | 300, at most one per member and book. Book 1 has 15. |
 
 ## Package layout
 
