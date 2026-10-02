@@ -352,6 +352,8 @@ startSignal.countDown();                       // open the gate: all threads sta
 finished.await();                              // wait for all of them
 ```
 
+This *starting gate* is the core of load tests and of tests for race conditions: threads that wait at the gate really start at the same moment, so their steps interleave as often as possible. The J08 tests use one, through `practice.testkit.Concurrently`.
+
 A **`Semaphore`** holds a number of permits. `acquire()` takes one (and waits while none is left), and `release()` gives it back. Use it to limit how many threads use something at the same time, for example at most 10 parallel calls to a slow partner API:
 
 ```java
@@ -511,7 +513,7 @@ Module S08 continues with concurrency in the database: optimistic and pessimisti
 - Keep the lambdas you pass to `CompletableFuture`, `compute` or `updateAndGet` short and free of side effects. [Functional style](../../docs/handbook/functional-style.md)
 - Return `Optional` for "maybe there is a value", such as the current request id. [Null and Optional](../../docs/handbook/null-and-optional.md)
 - Keep amounts of money in `long` cents or `BigDecimal`, never in `double`. [Dates and money](../../docs/handbook/dates-and-money.md)
-- Keep Spring singleton beans stateless: only `final` fields. [Java style](../../docs/handbook/java-style.md)
+- Keep Spring singleton beans stateless: only `final` fields. [Concurrency](../../docs/handbook/concurrency.md)
 - Test concurrent code under stress: start many threads at the same moment, repeat many times, use timeouts and daemon threads, and check invariants such as "the total amount of money stays the same". A passing test doesn't prove that there is no race, so also check the code against the happens-before rules. [Testing](../../docs/handbook/testing.md)
 
 ## Exercises
@@ -614,13 +616,13 @@ Imagine two threads: one calls `transfer(a, b)`, the other `transfer(b, a)`. Whi
 
 ### J08-05 · Concurrent collections and coordination
 
-**Build** · 30 min · [`WordCounter.java`](src/main/java/practice/j08/ex05/WordCounter.java) · [`StartingGate.java`](src/main/java/practice/j08/ex05/StartingGate.java) · [`Pipeline.java`](src/main/java/practice/j08/ex05/Pipeline.java)
+**Build** · 30 min · [`WordCounter.java`](src/main/java/practice/j08/ex05/WordCounter.java) · [`Pipeline.java`](src/main/java/practice/j08/ex05/Pipeline.java)
 
-Read lesson sections 10–11 first. Three small tools that you'll meet again and again: counting into a shared `ConcurrentHashMap`, a starting gate built from two `CountDownLatch`es (the core of every load test), and a producer-consumer pipeline with a bounded queue (the pattern behind import jobs and message consumers).
+Read lesson sections 10–11 first. Two small tools that you'll meet again and again: counting into a shared `ConcurrentHashMap`, and a producer-consumer pipeline with a bounded queue (the pattern behind import jobs and message consumers). A third one, the starting gate built from two `CountDownLatch`es, is in lesson section 11: the J08 tests start their threads with it.
 
-**You'll practice:** `ConcurrentHashMap.merge`, `CountDownLatch`, `ArrayBlockingQueue` with `put` and `take`, backpressure, end markers (poison pills).
+**You'll practice:** `ConcurrentHashMap.merge`, `ArrayBlockingQueue` with `put` and `take`, backpressure, end markers (poison pills).
 
-**Rules:** in the Javadoc of the three classes. `WordCounter.words` is given.
+**Rules:** in the Javadoc of the two classes. `WordCounter.words` is given.
 
 <details>
 <summary>Hint 1</summary>

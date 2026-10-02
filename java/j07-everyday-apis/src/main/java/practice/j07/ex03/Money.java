@@ -15,8 +15,8 @@ import java.util.List;
  *       constructor adds zeros where needed: {@code new Money(new BigDecimal("12.5"), usd).amount()} is
  *       {@code 12.50}.</li>
  *   <li>An amount with more decimals than the currency uses throws {@link IllegalArgumentException}: 0.005 USD or
- *       0.5 KRW. Creating money never rounds silently; only {@link #multiply} rounds. Zeros at the end don't count:
- *       12.500 USD is fine and becomes 12.50.</li>
+ *       0.5 KRW. Creating money never rounds silently: only {@link #multiply} and {@link #allocate} round, as their
+ *       rules say. Zeros at the end don't count: 12.500 USD is fine and becomes 12.50.</li>
  *   <li>A currency without a defined number of decimals, such as gold ({@code XAU}), throws
  *       {@link IllegalArgumentException}.</li>
  *   <li>Amounts may be zero or negative, for example for refunds.</li>

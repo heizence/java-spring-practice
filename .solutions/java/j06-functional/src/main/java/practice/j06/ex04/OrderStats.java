@@ -3,7 +3,7 @@ package practice.j06.ex04;
 import java.util.List;
 
 /**
- * Statistics and exports for a batch of orders.
+ * Statistics for a batch of orders.
  *
  * <p>Every method rejects a {@code null} list with {@link NullPointerException} and never changes the list.
  */

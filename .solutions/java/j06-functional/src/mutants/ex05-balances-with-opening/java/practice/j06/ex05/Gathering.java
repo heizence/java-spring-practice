@@ -19,6 +19,15 @@ public final class Gathering {
     private Gathering() {
     }
 
+    /**
+     * Splits {@code items} into batches of {@code size} items, in order. The last batch holds the items that are
+     * left, so it can be smaller. Use {@link Gatherers#windowFixed}.
+     *
+     * <p>For example, {@code [a, b, c, d, e]} in batches of 2 gives {@code [[a, b], [c, d], [e]]}. No items give no
+     * batches. The batches are unmodifiable.
+     *
+     * @throws IllegalArgumentException if {@code size} is less than 1
+     */
     public static <T> List<List<T>> batches(List<T> items, int size) {
         Objects.requireNonNull(items, "items");
         // windowFixed checks the size too, but our message names the parameter the caller knows.
@@ -28,6 +37,15 @@ public final class Gathering {
                 .toList();
     }
 
+    /**
+     * The average of every run of {@code window} consecutive values, such as a moving average of response times.
+     * Use {@link Gatherers#windowSliding}.
+     *
+     * <p>For example, {@code [1, 2, 3, 4]} with a window of 2 gives {@code [1.5, 2.5, 3.5]}. With fewer values than
+     * {@code window}, there is no full window, so the result is empty.
+     *
+     * @throws IllegalArgumentException if {@code window} is less than 1
+     */
     public static List<Double> movingAverages(List<Integer> values, int window) {
         Objects.requireNonNull(values, "values");
         requireAtLeastOne(window, "window");
@@ -42,12 +60,26 @@ public final class Gathering {
                 .toList();
     }
 
+    /**
+     * The account balance after each amount, starting from {@code opening}. Positive amounts are deposits, negative
+     * ones are withdrawals. Use {@link Gatherers#scan}.
+     *
+     * <p>For example, an opening balance of 100 with the amounts {@code [50, -30]} gives {@code [150, 120]}. The
+     * opening balance itself isn't part of the result, so no amounts give an empty list.
+     */
     public static List<Long> runningBalances(long opening, List<Long> amounts) {
         return java.util.stream.Stream.concat(java.util.stream.Stream.of(opening),
                         amounts.stream().gather(Gatherers.scan(() -> opening, Long::sum)))
                 .toList();
     }
 
+    /**
+     * Turns decimal digits into a number: {@code [1, 2, 3]} gives 123. No digits give 0, and leading zeros don't
+     * change the value. Use {@link Gatherers#fold}.
+     *
+     * @throws IllegalArgumentException if a digit is outside 0 to 9
+     * @throws ArithmeticException      if the number is too big for a {@code long}
+     */
     public static long digitsToNumber(List<Integer> digits) {
         // fold is a reduce that runs in order, one element after the other, and emits exactly one value at the end,
         // even for an empty stream. reduce(0L, (n, d) -> n * 10 + d) would also need a combiner for parallel
@@ -60,6 +92,19 @@ public final class Gathering {
                 .orElseThrow(); // never empty: fold always emits its result
     }
 
+    /**
+     * A gatherer that keeps the first element for each key and drops later elements with the same key. The kept
+     * elements stay in encounter order. Keys are compared with {@code equals}, and {@code null} is a key like any
+     * other.
+     *
+     * <p>For example, {@code ["apple", "avocado", "banana"]} gathered with {@code distinctBy(w -> w.charAt(0))}
+     * gives {@code ["apple", "banana"]}.
+     *
+     * <p>The same gatherer can be used for several streams: each stream starts with nothing seen. It works with
+     * short-circuiting operations such as {@code limit}.
+     *
+     * @throws NullPointerException right away if {@code keyExtractor} is {@code null}
+     */
     public static <T, K> Gatherer<T, ?, T> distinctBy(Function<? super T, ? extends K> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor");
         return Gatherer.ofSequential(

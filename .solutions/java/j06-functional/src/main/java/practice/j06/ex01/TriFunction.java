@@ -21,6 +21,11 @@ public interface TriFunction<A, B, C, R> {
     /** Applies this function to the three arguments. */
     R apply(A a, B b, C c);
 
+    /**
+     * Returns a function that applies this function, then applies {@code after} to the result, like
+     * {@link java.util.function.BiFunction#andThen}. Throws {@link NullPointerException} right away if
+     * {@code after} is {@code null}.
+     */
     default <V> TriFunction<A, B, C, V> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after");
         // Inside a default method, apply(...) calls this function: the lambda captures `this`.

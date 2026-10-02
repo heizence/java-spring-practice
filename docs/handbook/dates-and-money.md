@@ -39,7 +39,7 @@ Time and money bugs are expensive. They show up as wrong bills, missed deadlines
 `double` can't represent most decimal fractions exactly (`0.1 + 0.2 != 0.3`), so it must never hold money.
 
 - **Create `BigDecimal` from a `String` or with `valueOf`:** `new BigDecimal("19.99")`, `BigDecimal.valueOf(1999, 2)`. Never `new BigDecimal(19.99)`: that captures the double's error exactly.
-- **Always state the rounding.** Division can produce endless decimals (1/3), and `divide` without a `RoundingMode` throws `ArithmeticException`. Pick the mode your domain requires: `HALF_EVEN` ("banker's rounding") avoids bias across many operations, and `HALF_UP` is what people learn in school.
+- **Always state the rounding.** Division can produce endless decimals (1/3), and then `divide` without a `RoundingMode` throws `ArithmeticException`. Pick the mode your domain requires: `HALF_EVEN` ("banker's rounding") avoids bias across many operations, and `HALF_UP` is what people learn in school.
 - **Compare with `compareTo`, not `equals`.** `new BigDecimal("1.0").equals(new BigDecimal("1.00"))` is `false`, because `equals` also compares scale. `compareTo` returns 0.
 - **Currencies have different minor units.** USD has 2 decimals, KRW and JPY have none. `Currency.getInstance("KRW").getDefaultFractionDigits()` tells you.
 - **Splitting money must not lose a cent (or a won).** 100 split three ways is 33.34 + 33.33 + 33.33, not 33.33 × 3.

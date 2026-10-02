@@ -148,31 +148,4 @@ final class Samples {
 
     public record Point(int x, int y) {
     }
-
-    public record Segment(Point from, Point to) {
-    }
-
-    public record Empty() {
-    }
-
-    public record Named(String name) {
-    }
-
-    /** Overrides toString(), but describeRecord() still uses the standard format. */
-    public record Fraction(int numerator, int denominator) {
-
-        @Override
-        public String toString() {
-            return numerator + "/" + denominator;
-        }
-    }
-
-    /** Overrides its accessor, so the accessor and the field disagree. */
-    public record Shout(String word) {
-
-        @Override
-        public String word() {
-            return word.toUpperCase();
-        }
-    }
 }

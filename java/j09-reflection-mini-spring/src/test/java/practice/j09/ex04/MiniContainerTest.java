@@ -43,9 +43,7 @@ import practice.j09.ex04.sample.cycle.CycleSamples.Y;
 import practice.j09.ex04.sample.cycle.CycleSamples.Z;
 import practice.j09.ex04.sample.lifecycle.LifecycleSamples.Database;
 import practice.j09.ex04.sample.lifecycle.LifecycleSamples.FailingInit;
-import practice.j09.ex04.sample.lifecycle.LifecycleSamples.InitWithParameter;
 import practice.j09.ex04.sample.lifecycle.LifecycleSamples.Repository;
-import practice.j09.ex04.sample.lifecycle.LifecycleSamples.TwoInitMethods;
 import practice.j09.ex04.sample.shop.CheckoutService;
 import practice.j09.ex04.sample.shop.FakePaymentGateway;
 import practice.j09.ex04.sample.shop.InMemoryProductCatalog;
@@ -419,20 +417,6 @@ class MiniContainerTest {
                     .cause()
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessage("cache server unreachable");
-        }
-
-        @Test
-        @DisplayName("two @Init methods: BeanCreationException")
-        void twoInitMethods() {
-            assertThatThrownBy(() -> MiniContainer.of(TwoInitMethods.class))
-                    .isInstanceOf(BeanCreationException.class);
-        }
-
-        @Test
-        @DisplayName("an @Init method with parameters: BeanCreationException")
-        void initWithParameter() {
-            assertThatThrownBy(() -> MiniContainer.of(InitWithParameter.class))
-                    .isInstanceOf(BeanCreationException.class);
         }
     }
 

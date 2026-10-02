@@ -45,6 +45,7 @@ public final class Validator {
     private Validator() {
     }
 
+    /** Returns every rule that {@code object} breaks, sorted by field name, then by message. */
     public static List<Violation> validate(Object object) {
         Objects.requireNonNull(object, "object");
         List<Violation> violations = new ArrayList<>();

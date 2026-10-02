@@ -8,14 +8,15 @@ import java.util.SequencedMap;
  *
  * <h2>Rules</h2>
  * <ul>
- *   <li>A {@code null} target, type, record, method name or argument array throws {@link NullPointerException}.</li>
+ *   <li>A {@code null} target, type, method name or argument array throws {@link NullPointerException}.</li>
  *   <li>{@link #newInstance} and {@link #invoke} only consider <em>public</em> constructors and methods. They choose
  *       one by its parameters: the same number as there are arguments, and each argument must fit its parameter
  *       type. A primitive parameter accepts its wrapper class ({@code int} accepts an {@code Integer}), but there is
  *       no widening ({@code long} doesn't accept an {@code Integer}). A {@code null} argument fits any parameter
  *       that isn't primitive.</li>
  *   <li>Exactly one constructor or method must fit. None, or more than one, throws
- *       {@link IllegalArgumentException} with a message that names the class.</li>
+ *       {@link IllegalArgumentException} with a message that names the class (and, for {@link #invoke}, the
+ *       method).</li>
  *   <li>When the called constructor or method throws, the caller gets that same exception if it is a
  *       {@link RuntimeException} or an {@link Error}. A checked exception arrives wrapped in an
  *       {@link java.lang.reflect.UndeclaredThrowableException}, as with Java's dynamic proxies.</li>
@@ -67,19 +68,6 @@ public final class Inspector {
      * @throws IllegalArgumentException if no public method of that name fits, or if several fit
      */
     public static Object invoke(Object target, String methodName, Object... args) {
-        // TODO: J09-01
-        throw new UnsupportedOperationException("TODO: J09-01");
-    }
-
-    /**
-     * Describes a record in the format of a record's own {@code toString()}: the simple class name, then
-     * {@code name=value} for each component in declaration order, such as {@code Point[x=1, y=2]}.
-     *
-     * <p>The values are read through the components' accessor methods (so an accessor that the record overrides is
-     * used) and turned into text with {@link String#valueOf(Object)}. The result is the same even when the record
-     * overrides {@code toString()}.
-     */
-    public static String describeRecord(Record record) {
         // TODO: J09-01
         throw new UnsupportedOperationException("TODO: J09-01");
     }

@@ -18,7 +18,7 @@ Most application code stops at step 1 or 2. **Spring singleton beans should be s
   ```java
   try (var executor = Executors.newFixedThreadPool(4)) {
       // submit tasks…
-  } // waits for the tasks to finish, then shuts down
+  } // close(): accepts no new tasks, then waits until the submitted ones have finished
   ```
 - **Check-then-act needs one atomic step.** `if (!map.containsKey(k)) map.put(k, v)` is a race even with a `ConcurrentHashMap`. Use `putIfAbsent`, `computeIfAbsent` or `merge`.
 - **Read-modify-write needs one atomic step.** `count++` is three steps (read, add, write). Use `AtomicLong.incrementAndGet()` or `LongAdder.increment()`.

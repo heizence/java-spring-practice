@@ -1,8 +1,8 @@
 package practice.j09.ex04;
 
 /**
- * A bean can't be created: its class has no usable constructor or {@code @Init} method, or one of them threw. Like
- * Spring's {@code BeanCreationException}. Given code: you don't need to change it.
+ * A bean can't be created: its class has no usable constructor, or its constructor or {@code @Init} method threw.
+ * Like Spring's {@code BeanCreationException}. Given code: you don't need to change it.
  */
 public final class BeanCreationException extends RuntimeException {
 

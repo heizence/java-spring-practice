@@ -53,7 +53,7 @@ More details that matter in practice:
 
 - `Modifier.isStatic(field.getModifiers())` tells static members apart from instance members. There are `isPrivate`, `isFinal` and so on, too.
 - Primitive types have `Class` objects as well: `long.class`. Values always travel as objects, so a `long` arrives as a `Long`. And `long.class.isInstance(3L)` is `false`, because `3L` became a `Long`: compare with the wrapper class instead.
-- The Javadoc doesn't promise any order for `getDeclaredFields()` or `getDeclaredMethods()`. HotSpot, the JVM you use, returns declaration order, and many tools rely on that.
+- The Javadoc doesn't promise any order for `getDeclaredFields()` or `getDeclaredMethods()`. HotSpot, the JVM you use, returns fields in declaration order, and many tools rely on that. Methods often come back in a different order than in the source code, so sort them yourself when the order matters.
 - The compiler adds members you didn't write, called *synthetic* members. An inner class that uses its outer object gets a field `this$0`. A class that implements `Comparable<Ticket>` gets a *bridge method* `compareTo(Object)` next to your `compareTo(Ticket)`. Frameworks skip them with `isSynthetic()` and `isBridge()`.
 - Almost everything throws a checked `ReflectiveOperationException`: `NoSuchMethodException`, `IllegalAccessException`, `InstantiationException` (for an abstract class), and `InvocationTargetException`. The last one wraps whatever the called method or constructor threw. Use `getCause()` to get the original exception.
 
@@ -239,9 +239,9 @@ Reflection belongs in frameworks, libraries and test tools, almost never in busi
 
 **Build** · 30 min · [`Inspector.java`](src/main/java/practice/j09/ex01/Inspector.java)
 
-You build the kind of reflection toolkit that frameworks, test libraries and debuggers carry inside: read every field of an object, create an object from a class and some arguments, call a method by its name, and describe a record. Spring, Jackson and Mockito do each of these things thousands of times while your application starts.
+You build the kind of reflection toolkit that frameworks, test libraries and debuggers carry inside: read every field of an object, create an object from a class and some arguments, and call a method by its name. Spring, Jackson and Mockito do each of these things thousands of times while your application starts.
 
-**You'll practice:** `getDeclaredFields`, `Modifier`, `setAccessible`, `getConstructors`, `getMethods`, `Constructor.newInstance`, `Method.invoke`, unwrapping `InvocationTargetException`, record components and accessors, synthetic fields and bridge methods.
+**You'll practice:** `getDeclaredFields`, `Modifier`, `setAccessible`, `getConstructors`, `getMethods`, `Constructor.newInstance`, `Method.invoke`, unwrapping `InvocationTargetException`, synthetic fields and bridge methods.
 
 **Rules:** in the Javadoc of `Inspector`.
 

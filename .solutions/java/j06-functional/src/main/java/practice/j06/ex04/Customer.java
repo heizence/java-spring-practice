@@ -12,6 +12,7 @@ import java.util.Optional;
  *   <li>The email address is optional. A {@code null} email passed to the constructor means "no email".</li>
  *   <li>{@link #email()} returns the address, or an empty {@link Optional} for a customer without one. It never
  *       returns {@code null}.</li>
+ *   <li>{@link Optional} is meant for return values only: no field of this class has the type {@code Optional}.</li>
  * </ul>
  */
 public final class Customer {
