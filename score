@@ -23,8 +23,12 @@ else
   tasks=(test mutationTest)
 fi
 
+if [[ ! -f build/score.log ]]; then
+  echo "Running tests… (the first run downloads JDK 25 and libraries, which takes a few minutes)"
+else
+  echo "Running tests…"
+fi
 mkdir -p build
-echo "Running tests… (the very first run downloads JDK 25 and libraries, which takes a few minutes)"
 ./gradlew "${tasks[@]}" --continue --quiet -Pscore > build/score.log 2>&1
 status=$?
 
