@@ -2,6 +2,7 @@ package practice.j03.ex04;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
@@ -107,9 +108,10 @@ class SignupServiceTest {
         void rejectsTakenEmail() {
             when(users.existsByEmail(EMAIL)).thenReturn(true);
 
-            assertThatThrownBy(() -> service.signUp(EMAIL, PASSWORD))
-                    .isInstanceOf(DuplicateEmailException.class)
-                    .hasMessageContaining(EMAIL);
+            DuplicateEmailException thrown =
+                    catchThrowableOfType(DuplicateEmailException.class, () -> service.signUp(EMAIL, PASSWORD));
+
+            assertThat(thrown).extracting(DuplicateEmailException::email).isEqualTo(EMAIL);
         }
     }
 

@@ -28,6 +28,10 @@ public final class PasswordPolicy {
     public static final int MAX_LENGTH = 64;
     private static final int MIN_CHECKED_USERNAME_LENGTH = 3;
 
+    /**
+     * Returns every rule that {@code password} breaks, in the order of the {@link Violation} enum, or an empty list
+     * if it breaks none. The list can't be modified.
+     */
     public List<Violation> check(String username, String password) {
         Objects.requireNonNull(username, "username");
         Objects.requireNonNull(password, "password");
@@ -58,6 +62,7 @@ public final class PasswordPolicy {
         return violations.isEmpty() ? List.of() : List.of(violations.getFirst());
     }
 
+    /** Returns {@code true} if {@code password} breaks no rule: exactly when {@link #check} returns an empty list. */
     public boolean isValid(String username, String password) {
         return check(username, password).isEmpty();
     }
