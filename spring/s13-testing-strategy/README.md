@@ -2,7 +2,7 @@
 
 ⏱ 2 sessions · week 13 · 2 exercises
 
-You have run hundreds of tests in this course; now you write them for Spring code yourself. A Spring service has risks in places a plain unit test can't see: a JSON field with the wrong name, a request parameter that never reaches the service, a query that sorts in the wrong order or counts the wrong rows. This module shows which kind of test catches which risk, how to make Spring tests fast, and what a good test asserts. The exercises give you a finished order API and finished order queries, and you write the tests that would catch the bugs someone will introduce next month. This module's copy of the bookstore adds that order API; to keep the tests focused, it has no login (S12). Read lesson sections 1–4 before S13-01 and sections 5–10 before S13-02.
+Most modules so far came with their tests. In real work you write them, and you decide which kind to write. A Spring service has risks in places a plain unit test can't see: a JSON field with the wrong name, a request parameter that never reaches the service, a query that sorts in the wrong order or counts the wrong rows. This module shows which kind of test catches which risk, how to make Spring tests fast, and what a good test asserts. The exercises give you a finished order API and finished order queries, and you write the tests that would catch the bugs someone will introduce next month. This module's copy of the bookstore adds that order API; to keep the tests focused, it has no login (S12). Read lesson sections 1–4 before S13-01 and sections 5–10 before S13-02.
 
 ## Lesson
 
