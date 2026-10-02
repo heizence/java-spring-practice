@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Runs the exercise tests and prints your score.
+#
+#   ./score            every module
+#   ./score j05        one module
+#   ./score j05-04     one exercise, listing every failing test with its message
+#
+set -uo pipefail
+cd "$(dirname "$0")"
+
+filter="$(echo "${1:-}" | tr '[:upper:]' '[:lower:]')"
+module="${filter%%-*}"
+
+if [[ -n "$module" ]]; then
+  dir="$(find java spring -mindepth 1 -maxdepth 1 -type d -name "${module}-*" 2>/dev/null | sort | head -n 1)"
+  if [[ -z "$dir" ]]; then
+    echo "No module matches '$1'. Try a module like j05 or an exercise like j05-04." >&2
+    exit 1
+  fi
+  project=":${dir//\//:}"
+  tasks=("$project:test" "$project:mutationTest")
+else
+  tasks=(test mutationTest)
+fi
+
+mkdir -p build
+echo "Running tests… (the very first run downloads JDK 25 and libraries, which takes a few minutes)"
+./gradlew "${tasks[@]}" --continue --quiet -Pscore > build/score.log 2>&1
+status=$?
+
+compile_failed="$(grep -oE "Execution failed for task ':(java|spring):[^:']+:compile[A-Za-z]*Java'" build/score.log \
+  | sed -E "s/.*:(java|spring):([^:]+):.*/\2/" | sort -u | paste -sd, -)"
+
+if [[ $status -ne 0 && -z "$compile_failed" ]]; then
+  echo "Gradle stopped with an error that isn't a compile error. The end of the log (build/score.log):" >&2
+  tail -n 30 build/score.log >&2
+  exit $status
+fi
+
+./gradlew --quiet :testkit:scoreReport -Ponly="$filter" -PcompileFailed="$compile_failed"
