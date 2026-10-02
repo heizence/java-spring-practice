@@ -290,9 +290,13 @@ spring/s06-spring-data-jpa/
 - **Keep the number of distinct application contexts low**: Spring caches a context per configuration, and every
   new one costs seconds. Prefer the template's `@IntegrationTest` meta-annotation; avoid `@DirtiesContext` and
   one-off `@MockitoBean` combinations.
-- **Leave the database as you found it.** Prefer `@Transactional` test classes (MockMvc requests run in the test's
-  transaction and are rolled back). Tests that need real commits (concurrency, after-commit events) clean up after
-  themselves in `@AfterEach`.
+- **Leave the database as you found it.** The template's `@IntegrationTest` is `@Transactional`: each test, its
+  `@BeforeEach` and its MockMvc requests share one transaction that is rolled back. Tests that need real commits
+  (concurrency, after-commit events) opt out with `@Transactional(propagation = NOT_SUPPORTED)` and call
+  `seedData.restore()` in `@AfterEach` (Flyway clean + migrate, about 0.25 s).
+- Spring module tests run test methods on the calling thread (`practice.spring-exercises` sets JUnit's timeout
+  thread mode to `SAME_THREAD`): Spring binds transactions to threads. The template's `TestThreadGuard` fails loudly
+  if that setting is missing. Tests run at a fixed time (`TestClock`, 2026-10-15T00:00:00Z).
 - Tests may rely on the seed facts documented in `spring/BOOKSTORE.md`; don't depend on undocumented seed rows.
 - Count SQL statements with the template's `SqlStatementCounter` (N+1 tests).
 - Keep a module's test run under about 90 seconds; mutants each start a fresh JVM and container, so prefer 2–4

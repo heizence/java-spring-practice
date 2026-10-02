@@ -33,11 +33,10 @@ An API is a contract with every client: web front ends, mobile apps, other servi
 
 ## Errors: problem details
 
-Spring supports RFC 9457 *problem details* out of the box (`ProblemDetail`). Add a stable, machine-readable `code`, so clients can react without parsing English messages:
+Spring supports RFC 9457 *problem details* out of the box (`ProblemDetail`). Add a stable, machine-readable `code`, so clients can react without parsing English messages. (A missing `type` means the default, `about:blank`; Spring Framework 7 leaves it out.)
 
 ```json
 {
-  "type": "about:blank",
   "title": "Bad Request",
   "status": 400,
   "detail": "The request has 2 invalid fields.",
