@@ -1,0 +1,29 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+.kotlin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# VS Code
+.vscode/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# macOS
+.DS_Store
+
+# Claude Code worktrees and local settings
+.claude/worktrees/
+.claude/settings.local.json

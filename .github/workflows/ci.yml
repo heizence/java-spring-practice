@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Compile everything
+        run: ./gradlew compileJava compileTestJava
+
+      # The exercises as learners get them: every exercise must start out failing.
+      - name: Check the unsolved exercises
+        if: github.ref_name == 'main' || github.ref_name == 'authoring'
+        run: scripts/verify.sh unsolved
+
+      # The reference solutions: every test passes and every mutant is caught.
+      - name: Check the reference solutions
+        if: github.ref_name == 'solutions'
+        run: scripts/verify.sh solved
+
+      - name: Check the reference solutions (authoring)
+        if: github.ref_name == 'authoring'
+        run: |
+          scripts/solutions.sh apply
+          scripts/verify.sh solved
