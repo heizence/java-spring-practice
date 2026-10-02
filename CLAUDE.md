@@ -237,7 +237,7 @@ After both checks pass for every module: `scripts/release.sh "<message>"` on a c
 
 | Stage | Content | Status |
 |---|---|---|
-| 1 | Infrastructure, handbook (Java), Part 1 J01–J10 | in progress |
+| 1 | Infrastructure, handbook (Java), Part 1 J01–J10 | done (2026-10-02) |
 | 2 | Spring S01–S07, bookstore schema and seed data, Spring handbook pages | planned (before week 7) |
 | 3 | Spring S08–S14, optional capstone | planned (before week 11) |
 
