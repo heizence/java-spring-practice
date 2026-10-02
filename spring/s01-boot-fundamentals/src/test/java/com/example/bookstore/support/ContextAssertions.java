@@ -2,6 +2,8 @@ package com.example.bookstore.support;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.core.NestedExceptionUtils;
 
@@ -31,7 +33,7 @@ public final class ContextAssertions {
     /** Fails if the context started; otherwise returns the exception that stopped it. */
     public static Throwable assertStartupFailed(AssertableApplicationContext context) {
         assertThat(context.getStartupFailure())
-                .as("The application context started, but it should have failed")
+                .withFailMessage("The application context started, but it should have failed")
                 .isNotNull();
         return context.getStartupFailure();
     }
@@ -39,13 +41,23 @@ public final class ContextAssertions {
     /** Fails unless the context started and holds exactly one bean of this type; returns that bean. */
     public static <T> T singleBean(AssertableApplicationContext context, Class<T> type) {
         assertStarted(context);
-        assertThat(context.getBeanNamesForType(type)).as("beans of type %s", type.getSimpleName()).hasSize(1);
+        List<String> names = List.of(context.getBeanNamesForType(type));
+        assertThat(names)
+                .withFailMessage("Expected one bean of type %s, but found %s", type.getSimpleName(), found(names))
+                .hasSize(1);
         return context.getBean(type);
     }
 
     /** Fails unless the context started and holds no bean of this type. */
     public static void assertNoBean(AssertableApplicationContext context, Class<?> type) {
         assertStarted(context);
-        assertThat(context.getBeanNamesForType(type)).as("beans of type %s", type.getSimpleName()).isEmpty();
+        List<String> names = List.of(context.getBeanNamesForType(type));
+        assertThat(names)
+                .withFailMessage("Expected no bean of type %s, but found %s", type.getSimpleName(), found(names))
+                .isEmpty();
+    }
+
+    private static String found(List<String> beanNames) {
+        return beanNames.isEmpty() ? "none" : beanNames.size() + ": " + String.join(", ", beanNames);
     }
 }

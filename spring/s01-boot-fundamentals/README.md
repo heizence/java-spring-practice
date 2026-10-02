@@ -37,7 +37,7 @@ The container is an `ApplicationContext`. When it starts (Spring calls this a *r
 
 Every bean has a name. A scanned class gets its class name with a lower-case first letter (`CheckoutService` → `checkoutService`); a `@Bean` method gets the method's name. You can choose another one: `@Component("goldDiscount")`.
 
-Because singletons are created at startup, a wiring mistake (a missing bean, two candidates, a cycle) stops the application before it serves a single request. That's a feature: the error shows up in your test run or your deployment, not at 3 a.m. Spring Boot prints such failures in a block that starts with `APPLICATION FAILED TO START`, followed by a *Description* and an *Action*. Read that block first; the stack trace below it is usually longer than it is useful.
+Because singletons are created at startup, a wiring mistake (a missing bean, two candidates, a cycle) stops the application before it serves a single request. That's a feature: the error shows up in your test run or your deployment, not at 3 a.m. Spring Boot prints such failures in a block that starts with `APPLICATION FAILED TO START`, followed by a *Description* and an *Action*. Read that block first: it names the problem and suggests a fix in a few lines.
 
 Your own code almost never calls `context.getBean(...)`. Classes declare what they need in their constructors, and the container provides it. Calling `getBean` from business code (the *service locator* pattern) hides dependencies again, which is what DI was meant to fix.
 
@@ -61,7 +61,7 @@ public class BookstoreApplication {
 
 - `@SpringBootConfiguration`: this class is a `@Configuration` class, the starting point of the application's configuration.
 - `@EnableAutoConfiguration`: load Spring Boot's auto-configurations (section 10).
-- `@ComponentScan`: find the component classes **in this class's package and its sub-packages**. That's why the application class sits in the root package, `com.example.bookstore`, above every feature package. A class in `com.example.other` isn't found, and a class in `com.example` either.
+- `@ComponentScan`: find the component classes **in this class's package and its sub-packages**. That's why the application class sits in the root package, `com.example.bookstore`, above every feature package. Classes in `com.example.other`, or in `com.example` itself, aren't found.
 
 **`SpringApplication.run(BookstoreApplication.class, args)`** does the following:
 
@@ -365,7 +365,9 @@ private final ApplicationContextRunner runner = new ApplicationContextRunner()
 @Test
 void backsOff() {
     runner.withBean("applicationClock", Clock.class, () -> fixedClock)
-            .run(context -> assertThat(context).hasSingleBean(Clock.class).getBean(Clock.class).isSameAs(fixedClock));
+            .run(context -> assertThat(context)
+                    .hasSingleBean(Clock.class)
+                    .getBean(Clock.class).isSameAs(fixedClock));
 }
 ```
 
@@ -418,7 +420,7 @@ The exercises add to one application, but each one stands alone: its tests start
 
 > **BOOK-101 · Make the bookstore a Spring Boot application**
 >
-> The bookstore's code exists, but nothing starts it: `BookstoreApplication` is a plain class whose `main` method does nothing yet. Make it a Spring Boot application that finds its own beans, configures itself, and reports its catalog at startup, so that whoever starts it sees that the catalog is in place.
+> The bookstore's code exists, but nothing starts it: `BookstoreApplication` is a plain class, and its `main` method only throws a TODO exception. Make it a Spring Boot application that finds its own beans, configures itself, and reports its catalog at startup, so that whoever starts it sees that the catalog is in place.
 >
 > Acceptance criteria:
 > - `BookstoreApplication.main` starts Spring Boot and passes the command-line arguments on.
@@ -446,7 +448,7 @@ bookstore/
 | `testImplementation("org.springframework.boot:spring-boot-starter-test")` | JUnit, AssertJ, Mockito and Spring's test support. |
 | `BookstoreApplication` | The entry point: `@SpringBootApplication` and a `main` method, in the root package. |
 | `application.properties` | The configuration, with one line: `spring.application.name=bookstore`. This repository uses the YAML format, `application.yml`, which nests better. |
-| `BookstoreApplicationTests` | One test, `contextLoads()`, with `@SpringBootTest`: it fails if the application context can't start. Small as it is, it catches every wiring mistake. |
+| `BookstoreApplicationTests` | One test, `contextLoads()`, with `@SpringBootTest`: it fails if the application context can't start. Small as it is, it catches every wiring mistake that stops the application from starting. |
 
 In this repository, the build file is shorter: the `practice.spring-exercises` plugin in `build-logic/` holds what every module shares (the Spring Boot plugin and BOM, Java 25, Lombok, the test setup), and [`build.gradle.kts`](build.gradle.kts) lists only this module's starter.
 
@@ -506,7 +508,7 @@ The tests replace the application's clock with a `TestClock` that stands still a
 A `Map` has no order you can rely on. Sort its entries before you build the lines: `entrySet().stream().sorted(Map.Entry.comparingByKey())`.
 </details>
 
-**Done?** Compare with the reference on the `solutions` branch, then ask yourself: How would a plain unit test, without Spring, create your `CheckoutService` with a fixed clock? What would break if `ClockConfiguration` called `Instant.now()` instead of returning a `Clock`?
+**Done?** Compare with the reference on the `solutions` branch, then ask yourself: How would a plain unit test, without Spring, create your `CheckoutService` with a fixed clock? What would you lose if `CheckoutService` called `Instant.now()` instead of using the injected `Clock`?
 
 ### S01-03 · Choosing between implementations
 
@@ -554,7 +556,7 @@ In the constructor, loop over `MemberGrade.values()`, look up `grade.name().toLo
 >
 > Acceptance criteria:
 > - `CartService` is a singleton; `ShoppingCart` is a prototype, and every cart gets its `BookCatalog` injected.
-> - A member gets the same cart on every call; two members never share one. `discard` starts a member's next cart afresh.
+> - A member gets the same cart on every call; two members never share one. After `discard`, the member's next cart is a new, empty one.
 > - When the application stops, every open cart that isn't empty is saved in the `SavedCartStore`.
 > - When the application starts, before anyone asks for a cart, every saved cart is opened again with its books, and the store is emptied.
 
