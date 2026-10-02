@@ -9,7 +9,7 @@ The template exists only on the `authoring` branch, as the Gradle project `:book
 ## What it contains
 
 ```
-build.gradle.kts            starters + two test JVM settings that every module keeps (see "Must know")
+build.gradle.kts            the starters (test JVM settings come from practice.spring-exercises)
 compose.yaml                MySQL 9.7 for bootRun (Spring Boot's Docker Compose support connects to it)
 src/main/java/com/example/bookstore/
 ├── BookstoreApplication.java
@@ -55,7 +55,7 @@ Test support (`src/test/java/com/example/bookstore/support/`):
 
 | Module | Copy | Leave out |
 |---|---|---|
-| **S01–S04** (no database) | `BookstoreApplication`, `common/error/*`, `common/ClockConfiguration` if the module reads the time, `support/TestClock` if its tests control time, the `tasks.withType<Test>` block of `build.gradle.kts`, and from `application.yml` only `spring.application.name` and `spring.web.locale*`. | Entities and repositories (JPA annotations need JPA: model what the module needs as plain classes or records in the same packages), migrations, `compose.yaml`, the other test support. In `GlobalExceptionHandler`, delete `handlePropertyReference` (it needs Spring Data). |
+| **S01–S04** (no database) | `BookstoreApplication`, `common/error/*`, `common/ClockConfiguration` if the module reads the time, `support/TestClock` if its tests control time, and from `application.yml` only `spring.application.name` and `spring.web.locale*`. | Entities and repositories (JPA annotations need JPA: model what the module needs as plain classes or records in the same packages), migrations, `compose.yaml`, the other test support. In `GlobalExceptionHandler`, delete `handlePropertyReference` (it needs Spring Data). |
 | **S05** (JDBC) | As S01–S04, plus `db/migration/*`, `compose.yaml`, the datasource, Flyway and logging parts of `application.yml`, and `support/` without `SqlStatementCounter` (delete its two beans in `IntegrationTestConfiguration`). | Entities, repositories, `BaseTimeEntity`, `JpaAuditingConfiguration`, the `jpa` part of `application.yml`, `handlePropertyReference`. |
 | **S06+** (JPA) | Everything except the template's own tests. | `BookController`/`BookService`/`BookResponse` if the module's exercises build them. |
 
@@ -113,12 +113,13 @@ Docker must be running.
 
 ## Must know
 
-- **Keep the `tasks.withType<Test>` block of `build.gradle.kts`.** testkit's `junit-platform.properties` runs every
-  test method in its own thread (`SEPARATE_THREAD`). Spring binds the test transaction to the thread that starts it,
-  so in that mode `@Transactional` tests commit instead of rolling back, and MockMvc requests run outside the test
-  transaction. The block switches to `SAME_THREAD` (the 10-second timeout still applies) and silences a JDK 25
-  warning about `sun.misc.Unsafe`. If the setting is missing, `TestThreadGuard` fails every `@IntegrationTest` with a
-  message that says what to add.
+- **Test methods run on the calling thread.** testkit's `junit-platform.properties` runs every test method in its own
+  thread (`SEPARATE_THREAD`). Spring binds the test transaction to the thread that starts it, so in that mode
+  `@Transactional` tests would commit instead of rolling back, and MockMvc requests would run outside the test
+  transaction. `practice.spring-exercises` therefore switches every Spring module to `SAME_THREAD` (the 10-second
+  timeout still applies after a method returns; the whole test run is limited to 10 minutes), and also silences a
+  JDK 25 warning about `sun.misc.Unsafe` and skips Docker's credential helper. If the setting is ever missing,
+  `TestThreadGuard` fails every `@IntegrationTest` with a message that says what to add.
 - **Spring Boot 4 packages:** `org.springframework.boot.webmvc.test.autoconfigure.{AutoConfigureMockMvc, WebMvcTest}`,
   `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest`,
   `org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer`,
