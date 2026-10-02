@@ -57,7 +57,7 @@ final class Answers {
     static final Boolean NEW_STRING_COMPARE_WITH_DOUBLE_EQUALS = false;
     // 1 is boxed to an Integer, and Long.equals is only true for another Long.
     static final Boolean LONG_EQUALS_INTEGER = false;
-    // Unboxing calls count.intValue() behind the scenes, which fails on null.
+    // Unboxing calls count.intValue() for you, and that call fails on null.
     static final Outcome UNBOXING_NULL = Outcome.THROWS_NULL_POINTER_EXCEPTION;
 
     // Passing values to methods

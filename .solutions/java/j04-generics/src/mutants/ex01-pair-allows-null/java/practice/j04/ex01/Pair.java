@@ -11,7 +11,7 @@ import java.util.function.Function;
  * <ul>
  *   <li>Neither value may be {@code null}: the constructor throws {@link NullPointerException}.</li>
  *   <li>A pair never changes. {@link #swap()}, {@link #mapFirst} and {@link #mapSecond} return a new pair.</li>
- *   <li>As a record, a pair gets {@code equals}, {@code hashCode} and {@code toString} for free: two pairs with
+ *   <li>As a record, a pair gets {@code equals}, {@code hashCode} and {@code toString} automatically: two pairs with
  *       equal values are equal.</li>
  * </ul>
  *
