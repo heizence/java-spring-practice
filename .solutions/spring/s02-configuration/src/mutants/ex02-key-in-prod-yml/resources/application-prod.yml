@@ -1,0 +1,7 @@
+# Mutant: the API key is committed to git in the production configuration.
+
+bookstore:
+  mail:
+    api:
+      url: https://mail-api.example.com/v1/messages
+      key: live-4f8c2a9e1b7d
