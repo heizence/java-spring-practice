@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Statistics and exports for a batch of orders.
+ * Statistics for a batch of orders.
  *
  * <p>Every method rejects a {@code null} list with {@link NullPointerException} and never changes the list.
  */

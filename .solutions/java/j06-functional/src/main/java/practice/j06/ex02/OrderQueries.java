@@ -27,6 +27,7 @@ public final class OrderQueries {
     private OrderQueries() {
     }
 
+    /** The orders with this status, in their original order. */
     public static List<Order> withStatus(List<Order> orders, OrderStatus status) {
         // Without this check, a null status would quietly match nothing.
         Objects.requireNonNull(status, "status");
@@ -35,6 +36,12 @@ public final class OrderQueries {
                 .toList(); // unmodifiable, unlike collect(Collectors.toList())
     }
 
+    /**
+     * The {@code n} orders with the highest totals, highest first. Orders with the same total are sorted by id, so
+     * the result doesn't depend on the order of the input. With fewer than {@code n} orders, you get all of them.
+     *
+     * @throws IllegalArgumentException if {@code n} is negative, with {@code n} in its message
+     */
     public static List<Order> topByTotal(List<Order> orders, int n) {
         if (n < 0) {
             throw new IllegalArgumentException("n must not be negative, but was " + n);
@@ -46,6 +53,7 @@ public final class OrderQueries {
                 .toList();
     }
 
+    /** Each customer's name once, in alphabetical order. */
     public static List<String> customers(List<Order> orders) {
         return orders.stream()
                 .map(Order::customer)
@@ -54,11 +62,13 @@ public final class OrderQueries {
                 .toList();
     }
 
+    /** Whether at least one order has a total <em>greater than</em> {@code thresholdCents}. False for no orders. */
     public static boolean hasOrderOver(List<Order> orders, long thresholdCents) {
         // anyMatch stops at the first match, and is false for an empty stream.
         return orders.stream().anyMatch(order -> order.totalCents() > thresholdCents);
     }
 
+    /** The sum of the totals of all orders that aren't cancelled. 0 for no orders. */
     public static long revenueCents(List<Order> orders) {
         // mapToLong gives a LongStream, which can sum() without boxing every value into a Long.
         return orders.stream()
@@ -67,6 +77,10 @@ public final class OrderQueries {
                 .sum();
     }
 
+    /**
+     * The average total of the orders that aren't cancelled, in cents, with the fraction: totals of 1 and 2 cents
+     * give 1.5. Returns 0.0 when no order counts.
+     */
     public static double averageOrderValue(List<Order> orders) {
         // average() returns an OptionalDouble, because an empty stream has no average. The method's contract
         // turns "no orders" into 0.0.

@@ -16,7 +16,7 @@ import java.util.SortedMap;
  *   <li>{@link Status#CANCELLED CANCELLED} orders appear only in {@link #orderCountByStatus()}. Every other method
  *       leaves them out, because they earn nothing.</li>
  *   <li>Every method builds a new result on each call, and never returns {@code null}. A report without orders that
- *       count gives empty maps.</li>
+ *       count gives empty maps, and {@link #partitionByTotal} gives two empty lists.</li>
  * </ul>
  */
 public final class SalesReport {
