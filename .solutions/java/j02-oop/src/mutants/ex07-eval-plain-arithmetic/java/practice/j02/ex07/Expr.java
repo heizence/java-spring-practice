@@ -67,7 +67,7 @@ public sealed interface Expr {
      *   <li>{@code x + 0} and {@code 0 + x} become {@code x};</li>
      *   <li>{@code Neg(Neg(x))} becomes {@code x}.</li>
      * </ul>
-     * The rules apply everywhere in the tree, until none applies any more. Simplify the children first, then
+     * The rules apply everywhere in the tree, until none applies anymore. Simplify the children first, then
      * apply the rules to the node built from them: {@code (0 * 1) + 5} becomes {@code 0 + 5}, then {@code 5}.
      * Nothing else changes: {@code x * 0}, {@code Neg(Num(0))} and {@code 2 + 3} stay as they are.
      */

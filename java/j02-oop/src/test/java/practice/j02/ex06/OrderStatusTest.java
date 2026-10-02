@@ -111,7 +111,7 @@ class OrderStatusTest {
         }
 
         @Test
-        @DisplayName("an order that has shipped can't be cancelled any more")
+        @DisplayName("an order that has shipped can't be cancelled anymore")
         void shippedCantBeCancelled() {
             assertThatThrownBy(() -> SHIPPED.transitionTo(CANCELLED)).isInstanceOf(IllegalStateException.class);
         }

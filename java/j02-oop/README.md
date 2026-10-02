@@ -748,11 +748,11 @@ For the checksum, loop over the 13 characters. `c - '0'` turns the character `'7
 
 **Build** · 30 min · [`Shape.java`](src/main/java/practice/j02/ex03/Shape.java), [`DiscountPolicy.java`](src/main/java/practice/j02/ex03/DiscountPolicy.java)
 
-Two small type hierarchies show Java's two main tools. `Shape` is an interface with a default method that works for every shape, implemented by `Circle`, `Rectangle` and `Square`. `DiscountPolicy` is an abstract class whose `final` template method enforces the rules, while `FixedDiscount` and `PercentageDiscount` only decide the amount.
+Two small type hierarchies show Java's two main tools. `Shape` is an interface with a default method that works for every shape, implemented by `Circle`, `Rectangle` and `Square`. `DiscountPolicy` is an abstract class whose `final` template method enforces the rules, while `FixedDiscount` only decides the amount.
 
 **You'll practice:** `implements` and `extends`, default and static interface methods, `super(...)`, `@Override`, dynamic dispatch, the template method pattern, `protected`, `Math.clamp`, formatting with `Locale.ROOT`.
 
-**Rules:** in the Javadoc of `Shape`, `DiscountPolicy` and each class (`Circle`, `Rectangle`, `Square`, `FixedDiscount`, `PercentageDiscount`).
+**Rules:** in the Javadoc of `Shape`, `DiscountPolicy` and each class (`Circle`, `Rectangle`, `Square`, `FixedDiscount`).
 
 <details>
 <summary>Hint 1</summary>
@@ -769,7 +769,7 @@ Two small type hierarchies show Java's two main tools. `Shape` is an interface w
 <details>
 <summary>Hint 3</summary>
 
-In `apply`, `Math.clamp(value, min, max)` keeps a number in a range. `Math.multiplyExact` throws instead of overflowing.
+In `apply`, `Math.clamp(value, min, max)` keeps a number in a range.
 </details>
 
 **Done?** Compare with the reference on the `solutions` branch, then ask yourself: Which of your shape classes could have been records? What would a `setWidth` method on `Rectangle` do to `Square`?
