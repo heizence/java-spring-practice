@@ -232,7 +232,7 @@ The syntax looks almost the same, so the differences are easy to miss:
 ## In real projects
 
 - **Accept general types, return specific ones.** Use wildcards in parameters (PECS) and interfaces such as `List` or `Collection` instead of `ArrayList`. Return plain types without wildcards. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
-- **No raw types, no ignored warnings.** Treat *unchecked* warnings like errors. Suppress one only on the smallest scope, with a comment that says why it's safe. → [Java style](../../docs/handbook/java-style.md)
+- **No raw types, no ignored warnings.** Treat *unchecked* warnings like errors. Suppress one only on the smallest scope, with a comment that says why it's safe. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
 - **Prefer `List<T>` to `T[]` in your APIs.** Arrays and generics don't mix well: there are no generic arrays, and array covariance is only checked at runtime. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
 - **Generic value types are immutable records** that copy the collections they receive, like `Pair` and `Page` in J04-01. → [Immutability](../../docs/handbook/immutability.md)
 - **A lookup returns `Optional<T>`, never `null`**, like `TypedMap.get` in J04-03. → [Null and Optional](../../docs/handbook/null-and-optional.md)
