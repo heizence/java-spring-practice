@@ -288,7 +288,7 @@ public final class ScoreReport {
             System.out.println("      ✗ " + failure.tier() + " › " + failure.testName());
             if (showAll && !failure.message().isBlank()) {
                 String message = failure.message();
-                System.out.println("          " + (message.length() > 160 ? message.substring(0, 157) + "..." : message));
+                System.out.println("          " + (message.length() > 240 ? message.substring(0, 237) + "..." : message));
             }
         }
         if (failures.size() > limit) {

@@ -71,12 +71,16 @@ The line under each README exercise heading starts with one of these, in bold.
 3. **One top-level test class per exercise**, annotated `@DisplayName("J05-09 · LRU cache")` (same title as the README).
    An exercise may have more than one test class only if each carries the same display name.
 4. **Tiers are `@Nested` classes** with `@DisplayName("Basic")`, `"Edge cases"`, `"Errors"`, and where useful
-   `"Randomized"` or `"Concurrency"`. Predict exercises group puzzles by topic instead.
+   `"Randomized"` or `"Concurrency"`. Predict exercises group puzzles by topic instead. Another tier name is fine
+   when an exercise needs it (J04-02 has "Signatures"); the score report lists unknown tiers last.
 5. **Every test has a `@DisplayName`** that states the behavior in plain English: "rejects a capacity below 1",
    "returns empty for a key that was never stored". The learner sees failing test names as hints.
 6. **Stubs** keep the solution's exact public API and Javadoc. Each body is
    `// TODO: J05-09` plus `throw new UnsupportedOperationException("TODO: J05-09");`. Stubs must compile; fields
    may be left out. The Javadoc is the spec: it states every rule, including edge cases and errors.
+   Exception: when the signature itself is the exercise (J04-02, wildcards), the stub has a deliberately strict
+   signature, the tests check the generic signature through reflection, and behavior tests only make calls that
+   compile against both versions. A compile error in a test file would block the whole module.
 7. **Every exercise starts failing** on `main` (at least one failing test; Write tests: no tests yet) and is fully
    green with its solution. `scripts/verify.sh` checks both.
 8. **Mutants** are whole-file copies of a class with one realistic mistake:
