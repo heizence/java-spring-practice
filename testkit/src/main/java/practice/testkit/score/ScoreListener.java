@@ -128,7 +128,10 @@ public final class ScoreListener implements TestExecutionListener {
         }
         TestIdentifier outermost = classes.getLast();
         String className = ((ClassSource) outermost.getSource().orElseThrow()).getClassName();
-        Optional<String> exerciseId = ExerciseIds.fromClassName(className);
+        // Part 2 tests live in the application's own packages, so the display name ("S04-02 · …") names the
+        // exercise. Part 1 tests can also be identified by their package (practice.j05.ex09).
+        Optional<String> exerciseId = ExerciseIds.fromDisplayName(outermost.getDisplayName())
+                .or(() -> ExerciseIds.fromClassName(className));
         if (exerciseId.isEmpty()) {
             return Optional.empty();
         }

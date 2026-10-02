@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Maintainer tool: publishes the `authoring` branch to the two branches learners use.
 #
-#   main       = authoring without the .solutions/ overlay   (the exercises)
+#   main       = authoring without the .solutions/ overlay and .authoring/ (the exercises)
 #   solutions  = authoring with the overlay applied           (the reference solutions)
 #
 # Run it from a clean `authoring` checkout after both verify modes pass. It commits on main and
@@ -26,8 +26,9 @@ publish() {
   if [[ "$with_solutions" == "yes" ]]; then
     cp -R .solutions/. .
   fi
-  git rm -rq --cached .solutions > /dev/null
-  rm -rf .solutions
+  # Maintainer-only folders never reach the learner branches.
+  git rm -rq --cached --ignore-unmatch .solutions .authoring > /dev/null
+  rm -rf .solutions .authoring
   git add -A
   if git diff --cached --quiet; then
     echo "$branch: nothing changed"
