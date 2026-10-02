@@ -10,8 +10,8 @@ From this module on, the bookstore keeps its data in MySQL. Before Spring Data J
 
 MySQL 9.7 runs in Docker. [`spring/BOOKSTORE.md`](../BOOKSTORE.md) describes the tables and the seed data; [`V1__create_schema.sql`](src/main/resources/db/migration/V1__create_schema.sql) is the schema itself.
 
-- **`bootRun`** reads [`compose.yaml`](compose.yaml): Spring Boot's Docker Compose support starts the MySQL container, points the application at it, and stops it when the application stops. The data lives in a Docker volume, so it survives restarts.
-- **Tests** start their own, empty MySQL container with [Testcontainers](https://testcontainers.com/) (`support/TestcontainersConfiguration.java`), one per test run. Flyway creates the schema and loads the seed data, and every test runs in a transaction that is rolled back at its end.
+- **`./gradlew :spring:s05-database-foundations:bootRun`** reads [`compose.yaml`](compose.yaml): Spring Boot's Docker Compose support starts the MySQL container, points the application at it, and stops it when the application stops. The data lives in a Docker volume, so it survives restarts. Try `http://localhost:8080/api/books/search?q=java`, and compare `?q=O'Neil` before and after S05-03.
+- **Tests** start their own, empty MySQL container with [Testcontainers](https://testcontainers.com/) ([`TestcontainersConfiguration`](src/test/java/com/example/bookstore/support/TestcontainersConfiguration.java)), one per test run. Flyway creates the schema and loads the seed data, and every test runs in a transaction that is rolled back at its end.
 - **Why not an in-memory database such as H2?** It speaks a different SQL dialect and locks differently. A test that passes on H2 tells you little about MySQL, and S07 and S08 test exactly the locking behavior.
 
 To look inside the `bootRun` database, open a MySQL shell in the container from the module folder:
