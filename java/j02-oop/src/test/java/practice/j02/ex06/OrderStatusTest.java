@@ -28,7 +28,7 @@ class OrderStatusTest {
     @DisplayName("Basic")
     class Basic {
 
-        @ParameterizedTest(name = "{0} → {1}")
+        @ParameterizedTest(name = "{0} → {1}", quoteTextArguments = false)
         @CsvSource({"PLACED, PAID", "PLACED, CANCELLED", "PAID, SHIPPED", "PAID, CANCELLED", "SHIPPED, DELIVERED"})
         @DisplayName("allows each move in the life cycle")
         void allowedMoves(OrderStatus from, OrderStatus to) {

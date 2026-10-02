@@ -1,7 +1,5 @@
 package practice.j02.ex05;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,10 +24,9 @@ import java.util.Set;
  *       <ul>
  *         <li>the method isn't one of {@code GET}, {@code POST}, {@code PUT}, {@code PATCH} or {@code DELETE}
  *             (uppercase, exactly);</li>
- *         <li>the URL isn't an absolute URL with the scheme {@code http} or {@code https} (in any letter case)
- *             and a host, such as {@code https://shop.example/api/orders};</li>
  *         <li>a header name is blank. A header value may be any string, even an empty one.</li>
- *       </ul></li>
+ *       </ul>
+ *       The URL is kept exactly as it was given. To keep the exercise small, this class doesn't check it.</li>
  *   <li>Setting a header again replaces its value. Header names are compared exactly, letter case included (a
  *       simplification: real HTTP treats {@code Content-Type} and {@code content-type} as the same header).</li>
  *   <li>A request never changes after {@code build()}: later calls on the builder don't affect it, and
@@ -43,13 +40,13 @@ public final class HttpRequest {
     private static final Set<String> METHODS = Set.of("GET", "POST", "PUT", "PATCH", "DELETE");
 
     private final String method;
-    private final URI uri;
+    private final String url;
     private final Map<String, String> headers;
 
     // Only Builder.build() calls this, with values it has already checked.
-    private HttpRequest(String method, URI uri, Map<String, String> headers) {
+    private HttpRequest(String method, String url, Map<String, String> headers) {
         this.method = method;
-        this.uri = uri;
+        this.url = url;
         // Map.copyOf makes an unmodifiable COPY. Collections.unmodifiableMap(headers) would only be a read-only
         // VIEW of the builder's map: a later builder.header(...) call would show up in this "immutable" request.
         this.headers = Map.copyOf(headers);
@@ -66,8 +63,8 @@ public final class HttpRequest {
     }
 
     /** The URL. */
-    public URI uri() {
-        return uri;
+    public String url() {
+        return url;
     }
 
     /** The headers, as a map that can't be modified. Empty if there are none. */
@@ -78,7 +75,7 @@ public final class HttpRequest {
     /** A new builder with this request's values, for building a changed copy. */
     public Builder toBuilder() {
         // The builder gets its own mutable copy of the headers: our map is unmodifiable, and must stay unshared.
-        var builder = new Builder(method, uri.toString());
+        var builder = new Builder(method, url);
         builder.headers.putAll(headers);
         return builder;
     }
@@ -122,28 +119,12 @@ public final class HttpRequest {
             if (!METHODS.contains(method)) {
                 throw new IllegalArgumentException("unsupported HTTP method: \"" + method + "\"");
             }
-            URI uri = parseHttpUrl(url);
             for (String name : headers.keySet()) {
                 if (name.isBlank()) {
                     throw new IllegalArgumentException("header name must not be blank, but was \"" + name + "\"");
                 }
             }
-            return new HttpRequest(method, uri, headers);
-        }
-
-        private static URI parseHttpUrl(String url) {
-            URI uri;
-            try {
-                uri = new URI(url);
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("not a valid URL: \"" + url + "\"", e);
-            }
-            String scheme = uri.getScheme(); // null for a relative URL such as "/api/orders"
-            boolean http = "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
-            if (!http || uri.getHost() == null) {
-                throw new IllegalArgumentException("not an absolute http or https URL: \"" + url + "\"");
-            }
-            return uri;
+            return new HttpRequest(method, url, headers);
         }
     }
 }

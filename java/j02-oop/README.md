@@ -823,7 +823,7 @@ You build two immutable classes. `Temperature` is created through static factori
 <details>
 <summary>Hint 1</summary>
 
-Store the temperature as a `long` number of hundredths of a degree Celsius: `Math.round(celsius * 100)`. Comparing `long` values is exact, so `equals`, `hashCode` and `compareTo` can't disagree. Check for NaN before you round. What is `Math.round(Double.NaN)`?
+Store the temperature as a `long` number of hundredths of a degree Celsius: `Math.round(celsius * 100)`. Comparing `long` values is exact, so `equals` and `hashCode` can't disagree. Check for NaN before you round. What is `Math.round(Double.NaN)`?
 </details>
 
 <details>

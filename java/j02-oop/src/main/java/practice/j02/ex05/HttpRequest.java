@@ -1,6 +1,5 @@
 package practice.j02.ex05;
 
-import java.net.URI;
 import java.util.Map;
 
 /**
@@ -22,10 +21,9 @@ import java.util.Map;
  *       <ul>
  *         <li>the method isn't one of {@code GET}, {@code POST}, {@code PUT}, {@code PATCH} or {@code DELETE}
  *             (uppercase, exactly);</li>
- *         <li>the URL isn't an absolute URL with the scheme {@code http} or {@code https} (in any letter case)
- *             and a host, such as {@code https://shop.example/api/orders};</li>
  *         <li>a header name is blank. A header value may be any string, even an empty one.</li>
- *       </ul></li>
+ *       </ul>
+ *       The URL is kept exactly as it was given. To keep the exercise small, this class doesn't check it.</li>
  *   <li>Setting a header again replaces its value. Header names are compared exactly, letter case included (a
  *       simplification: real HTTP treats {@code Content-Type} and {@code content-type} as the same header).</li>
  *   <li>A request never changes after {@code build()}: later calls on the builder don't affect it, and
@@ -55,7 +53,7 @@ public final class HttpRequest {
     }
 
     /** The URL. */
-    public URI uri() {
+    public String url() {
         // TODO: J02-05
         throw new UnsupportedOperationException("TODO: J02-05");
     }

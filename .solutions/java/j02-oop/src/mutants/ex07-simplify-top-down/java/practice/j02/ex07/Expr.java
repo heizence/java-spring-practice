@@ -10,6 +10,8 @@ import java.util.Objects;
  * an {@code Expr} can be exhaustive without a {@code default} branch. The records reject {@code null} children with
  * {@link NullPointerException}. Records compare by value, so two trees with the same shape and numbers are
  * {@code equals}.
+ *
+ * <p>The records are finished. Your part is {@link #eval()} and {@link #simplify()}.
  */
 public sealed interface Expr {
 
