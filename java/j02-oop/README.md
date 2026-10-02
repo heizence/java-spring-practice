@@ -517,7 +517,7 @@ public enum Shipping { // the same enum, written with constant-specific bodies
 - `name()` returns `"EXPRESS"`, `valueOf("EXPRESS")` does the opposite (and throws `IllegalArgumentException` for an unknown name), `values()` returns every constant, and `ordinal()` returns the position (0, 1, …).
 - Don't build logic on `ordinal()`. Reordering the constants would silently change the behavior. Keep what you need in a field.
 - A constant can't mention a *later* constant in its constructor arguments. `PLACED(PAID)` doesn't compile ("illegal forward reference"), because `PAID` doesn't exist yet when `PLACED` is created. Compute such relationships in a method.
-- `EnumMap` and `EnumSet` are a map and a set made for enum keys. They keep declaration order and store the data in a small array:
+- `EnumMap` and `EnumSet` are a map and a set made for enum keys. They keep declaration order and are smaller and faster than `HashMap` and `HashSet`: inside, an `EnumMap` is an array indexed by `ordinal()`, and an `EnumSet` is a row of bits, one per constant:
 
 ```java
 Map<Coin, Integer> counts = new EnumMap<>(Coin.class);
