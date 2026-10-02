@@ -352,6 +352,8 @@ startSignal.countDown();                       // open the gate: all threads sta
 finished.await();                              // wait for all of them
 ```
 
+This *starting gate* is the core of load tests and of tests for race conditions: threads that wait at the gate really start at the same moment, so their steps interleave as often as possible. The J08 tests use one, through `practice.testkit.Concurrently`.
+
 A **`Semaphore`** holds a number of permits. `acquire()` takes one (and waits while none is left), and `release()` gives it back. Use it to limit how many threads use something at the same time, for example at most 10 parallel calls to a slow partner API:
 
 ```java
@@ -614,13 +616,13 @@ Imagine two threads: one calls `transfer(a, b)`, the other `transfer(b, a)`. Whi
 
 ### J08-05 · Concurrent collections and coordination
 
-**Build** · 30 min · [`WordCounter.java`](src/main/java/practice/j08/ex05/WordCounter.java) · [`StartingGate.java`](src/main/java/practice/j08/ex05/StartingGate.java) · [`Pipeline.java`](src/main/java/practice/j08/ex05/Pipeline.java)
+**Build** · 30 min · [`WordCounter.java`](src/main/java/practice/j08/ex05/WordCounter.java) · [`Pipeline.java`](src/main/java/practice/j08/ex05/Pipeline.java)
 
-Read lesson sections 10–11 first. Three small tools that you'll meet again and again: counting into a shared `ConcurrentHashMap`, a starting gate built from two `CountDownLatch`es (the core of every load test), and a producer-consumer pipeline with a bounded queue (the pattern behind import jobs and message consumers).
+Read lesson sections 10–11 first. Two small tools that you'll meet again and again: counting into a shared `ConcurrentHashMap`, and a producer-consumer pipeline with a bounded queue (the pattern behind import jobs and message consumers). A third one, the starting gate built from two `CountDownLatch`es, is in lesson section 11: the J08 tests start their threads with it.
 
-**You'll practice:** `ConcurrentHashMap.merge`, `CountDownLatch`, `ArrayBlockingQueue` with `put` and `take`, backpressure, end markers (poison pills).
+**You'll practice:** `ConcurrentHashMap.merge`, `ArrayBlockingQueue` with `put` and `take`, backpressure, end markers (poison pills).
 
-**Rules:** in the Javadoc of the three classes. `WordCounter.words` is given.
+**Rules:** in the Javadoc of the two classes. `WordCounter.words` is given.
 
 <details>
 <summary>Hint 1</summary>
