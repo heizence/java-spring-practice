@@ -120,6 +120,10 @@ negative numbers · overflow · ordering/stability · large input · invalid arg
 - Keep a module's whole test run under about 30 seconds.
 - Use AssertJ (`assertThat`, `assertThatThrownBy`), given/when/then layout separated by blank lines, and test one
   behavior per test.
+- JUnit 6 puts text arguments of parameterized tests in quotes in display names (`"{0}"` shows `"abc"`).
+  Use `@ParameterizedTest(name = "...", quoteTextArguments = false)` when the quotes hurt readability.
+- Write non-ASCII characters in Java source as escapes when they're invisible (`﻿`, zero-width spaces),
+  so nobody is confused by a character they can't see.
 
 ### Predict exercises
 
