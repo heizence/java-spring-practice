@@ -21,7 +21,8 @@ import java.util.Optional;
  *   <li>{@link #min()} and {@link #max()} return empty for an empty tree.</li>
  *   <li>{@link #floor} returns the largest key that is less than or equal to the given key, or empty if every
  *       key is larger.</li>
- *   <li>{@link #inOrder()} returns all keys from smallest to largest, as an unmodifiable list.</li>
+ *   <li>{@link #inOrder()} returns all keys from smallest to largest, as an unmodifiable snapshot: keys added
+ *       later don't show up in a list you already have.</li>
  *   <li>{@link #height()} is the number of nodes on the longest path from the root down to a leaf: 0 for an
  *       empty tree, 1 for a tree with one node.</li>
  *   <li>{@code null} keys are rejected with {@link NullPointerException}.</li>
