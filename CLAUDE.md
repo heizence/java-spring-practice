@@ -222,8 +222,11 @@ scripts/verify.sh unsolved j05                     # ✔ every exercise starts o
 git status                                         # clean apart from your own changes
 ```
 
-Run concurrency modules' solved check at least three times to catch flaky tests. `./score j05` shows the
-learner's view. Never commit while solutions are applied.
+Gradle reuses test results when nothing changed (up-to-date checks and the build cache), so repeating a check
+re-runs nothing unless you add `--rerun`: `scripts/verify.sh solved j08 --rerun`. Run modules with concurrency or
+timing-sensitive tests at least five times that way (solved) and three times (unsolved) to catch flaky tests.
+`./score j05` shows the learner's view. Never commit while solutions are applied; `scripts/solutions.sh apply`
+refuses to run over uncommitted changes.
 
 ## Releasing
 

@@ -27,6 +27,8 @@ dependencies {
 
 // `./score` passes -Pscore: failing tests are expected while practicing, so they must not stop the run.
 val scoreMode = providers.gradleProperty("score").isPresent
+// -Prerun runs tests again even when nothing changed (no up-to-date check, no build cache), to hunt flaky tests.
+val forceRerun = providers.gradleProperty("rerun").isPresent
 
 fun Test.writeScoreTo(relativePath: String) {
     val scoreFile = layout.buildDirectory.file(relativePath)
@@ -44,6 +46,10 @@ tasks.withType<Test>().configureEach {
     testLogging {
         events("failed")
         exceptionFormat = TestExceptionFormat.SHORT
+    }
+    if (forceRerun) {
+        outputs.upToDateWhen { false }
+        outputs.cacheIf { false }
     }
 }
 
