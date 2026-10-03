@@ -329,4 +329,4 @@ Same commands with the `spring/` path: `scripts/solutions.sh apply spring/s06-sp
 | Stage | Content | Status |
 |---|---|---|
 | 1 | Infrastructure, handbook (Java), Part 1 J01–J10 | done (2026-10-02) |
-| 2 | Part 2 infrastructure, bookstore template, Spring S01–S14, Spring handbook pages, optional capstone | in progress |
+| 2 | Part 2 infrastructure, bookstore template, Spring S01–S14, Spring handbook pages, optional capstone | done (2026-10-03) |
