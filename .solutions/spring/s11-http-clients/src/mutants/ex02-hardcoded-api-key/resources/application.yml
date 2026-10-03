@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: bookstore
+
+  http:
+    clients:
+      # Defaults for every HTTP client that Spring Boot builds: RestClient.Builder and HTTP service clients. Without
+      # them, a client could wait for a slow service forever. A client can set its own values (see S11-02).
+      connect-timeout: 2s
+      read-timeout: 5s
+    serviceclient:
+      # The HTTP service group of PublisherCatalogClient (S11-02). Spring Boot builds the group's RestClient from
+      # these settings.
+      publisher-catalog:
+        base-url: https://catalog.publisher.example
+        connect-timeout: 1s
+        read-timeout: 2s
+        default-header:
+          X-Api-Key: local-development-key
+
+  web:
+    # Error messages, including bean validation messages, are always in English, whatever language the client asks
+    # for in its Accept-Language header.
+    locale: en
+    locale-resolver: fixed
+
+bookstore:
+  shipping:
+    # The carrier's API for shipping estimates (S11-01).
+    base-url: https://api.carrier.example
+  warehouse:
+    # The central warehouse's stock API (S11-03).
+    base-url: https://warehouse.bookstore.example
