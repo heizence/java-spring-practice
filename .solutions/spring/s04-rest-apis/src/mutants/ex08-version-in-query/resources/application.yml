@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: bookstore
+
+  web:
+    # Error messages, including bean validation messages, are always in English, whatever language the client asks
+    # for in its Accept-Language header.
+    locale: en
+    locale-resolver: fixed
+
+  # The JSON rules of spring/BOOKSTORE.md (S04-04). Jackson 3 already writes Instant and LocalDate values as ISO-8601
+  # strings, writes enums by name and ignores unknown request properties; these settings add the rest.
+  jackson:
+    # Leave out properties whose value is null: an out-of-stock book has no "orderBy" at all.
+    default-property-inclusion: non_null
+    # Write zoned times (ZonedDateTime, OffsetDateTime) in UTC, like Instants: "2026-10-15T05:00:00Z".
+    time-zone: UTC
+    deserialization:
+      # Money is a whole number of won: reject 36000.5 instead of silently cutting it to 36000.
+      accept-float-as-int: false
+
+  # API versions in a request header (S04-08): "API-Version: 2". A request without the header gets version 1.
+  mvc:
+    apiversion:
+      use:
+        query-parameter: version
+      default: 1
+
+  servlet:
+    multipart:
+      # Tomcat's own limit for uploads, a backstop above the cover limit below: CoverService answers files up to this
+      # size with a clear problem detail, and Tomcat refuses anything larger before it reaches our code.
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+bookstore:
+  admin:
+    # The token that requests to /api/admin/** must send in the X-Admin-Token header (S04-05). This value is for your
+    # own computer only: elsewhere, set the environment variable BOOKSTORE_ADMIN_TOKEN, which overrides it.
+    token: local-admin-token
+  cors:
+    # The web front ends that may call the API from a browser (S04-10).
+    allowed-origins: https://shop.example.com
+  covers:
+    max-size: 1MB
+
+springdoc:
+  # The admin API is for the store's staff, not for API clients: keep it out of the published document (S04-09).
+  paths-to-exclude: /api/admin/**
+  # Our responses are JSON. Without this, springdoc documents them as */*, "any media type".
+  default-produces-media-type: application/json

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: bookstore
+
+  web:
+    # Error messages, including bean validation messages, are always in English, whatever language the client asks
+    # for in its Accept-Language header.
+    locale: en
+    locale-resolver: fixed
+
+  # TODO: S04-04: the JSON rules of spring/BOOKSTORE.md, under spring.jackson.
+
+  # TODO: S04-08: API versions in the request header API-Version, under spring.mvc.
+
+  servlet:
+    multipart:
+      # Tomcat's own limit for uploads, a backstop above the cover limit below: CoverService answers files up to this
+      # size with a clear problem detail, and Tomcat refuses anything larger before it reaches our code.
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+bookstore:
+  admin:
+    # The token that requests to /api/admin/** must send in the X-Admin-Token header (S04-05). This value is for your
+    # own computer only: elsewhere, set the environment variable BOOKSTORE_ADMIN_TOKEN, which overrides it.
+    token: local-admin-token
+  cors:
+    # The web front ends that may call the API from a browser (S04-10).
+    allowed-origins: https://shop.example.com
+  covers:
+    max-size: 1MB
+
+# TODO: S04-09: springdoc settings for the published OpenAPI document.

@@ -1,0 +1,21 @@
+id	email	name	role
+1	minji@example.com	Minji Kim	USER
+2	jun@example.com	Jun Park	USER
+3	seoyeon@example.com	Seoyeon Lee	USER
+4	hyunwoo@example.com	Hyunwoo Choi	USER
+5	jiwon@example.com	Jiwon Jung	USER
+6	doyun@example.com	Doyun Kang	USER
+7	haeun@example.com	Haeun Cho	USER
+8	siwoo@example.com	Siwoo Yoon	USER
+9	yuna@example.com	Yuna Jang	USER
+10	joon@example.com	Joon Lim	USER
+11	subin@example.com	Subin Han	USER
+12	taeyang@example.com	Taeyang Oh	USER
+13	chaewon@example.com	Chaewon Seo	USER
+14	minjun@example.com	Minjun Shin	USER
+15	dahye@example.com	Dahye Kwon	USER
+16	yejin@example.com	Yejin Hwang	USER
+17	sungmin@example.com	Sungmin Ahn	USER
+18	eunji@example.com	Eunji Song	USER
+19	hoon@example.com	Hoon Yoo	USER
+20	admin@example.com	Admin	ADMIN

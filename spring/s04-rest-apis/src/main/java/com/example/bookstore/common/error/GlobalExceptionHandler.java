@@ -1,0 +1,186 @@
+package com.example.bookstore.common.error;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.ParameterErrors;
+import org.springframework.validation.method.ParameterValidationResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+/**
+ * Turns every exception that leaves a controller into an RFC 9457 problem-detail response with a machine-readable
+ * {@code code} (see {@code spring/BOOKSTORE.md}):
+ *
+ * <pre>{@code
+ * { "title": "Conflict", "status": 409, "detail": "A book with ISBN 9791115881394 already exists.",
+ *   "instance": "/api/books", "code": "DUPLICATE_ISBN" }
+ * }</pre>
+ *
+ * <ul>
+ *   <li>{@link BusinessException}: the status and code of its {@link ErrorCode}, its message as {@code detail}.</li>
+ *   <li>Invalid input (bean validation, malformed JSON, a parameter of the wrong type, a missing parameter):
+ *       {@code 400} with code {@code INVALID_INPUT}. Validation failures also list each invalid value in an
+ *       {@code errors} property of {@link FieldViolation}s, sorted by field, then message.</li>
+ *   <li>Other errors that Spring MVC detects (unknown path, wrong HTTP method, unsupported content type): their
+ *       usual status, with the generic code for it.</li>
+ *   <li>Anything else is a bug: {@code 500} with a generic message, logged with its stack trace. The response never
+ *       shows the exception's message, which could reveal internals.</li>
+ * </ul>
+ *
+ * <p>The base class, {@link ResponseEntityExceptionHandler}, already handles Spring MVC's own exceptions; this class
+ * adds the {@code code} to all of them in {@link #createResponseEntity}. Responses have no {@code type}: RFC 9457
+ * reads a missing {@code type} as {@code about:blank}, meaning that the status says it all.
+ *
+ * <p>S04-03 implements the four methods that throw {@code UnsupportedOperationException}. Until then, Spring falls
+ * back to answering errors with the right status but an empty body, and a {@code BusinessException} isn't handled at
+ * all.
+ */
+@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private static final String CODE = "code";
+    private static final String ERRORS = "errors";
+
+    /** Sorted, so that a response with several errors is the same on every run. */
+    private static final Comparator<FieldViolation> BY_FIELD_AND_MESSAGE =
+            Comparator.comparing(FieldViolation::field).thenComparing(FieldViolation::message);
+
+    /**
+     * A broken business rule or a missing resource: the status of the exception's {@link ErrorCode}, the code's name
+     * as {@code code}, and the exception's message as {@code detail}.
+     */
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ProblemDetail> handleBusinessException(BusinessException exception) {
+        // TODO: S04-03
+        throw new UnsupportedOperationException("TODO: S04-03");
+    }
+
+    /**
+     * Anything not handled elsewhere is a bug. Logs it at {@code ERROR} level with its stack trace, for us, in a
+     * message that names the request ({@code Unexpected error in GET /api/books}), and tells the client only that
+     * something went wrong: {@code 500}, code {@code INTERNAL_ERROR}, and the code's default message as
+     * {@code detail}. The exception's own message could reveal internals, so it never reaches the client.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ProblemDetail> handleUnexpectedException(Exception exception, HttpServletRequest request) {
+        // TODO: S04-03
+        throw new UnsupportedOperationException("TODO: S04-03");
+    }
+
+    /**
+     * A {@code @Valid @RequestBody} broke its constraints. Keeps Spring's problem detail ({@code 400},
+     * {@code "Invalid request content."}) and adds the code {@code INVALID_INPUT} and an {@code errors} list: one
+     * {@link FieldViolation} per broken constraint, named by the JSON property path ({@code title}), and for a
+     * constraint on the whole object, by the object's name.
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status,
+            WebRequest request) {
+        // TODO: S04-03
+        throw new UnsupportedOperationException("TODO: S04-03");
+    }
+
+    /** A constrained request parameter or path variable ({@code @RequestParam @Max(100) int size}) is invalid. */
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(
+            HandlerMethodValidationException exception, HttpHeaders headers, HttpStatusCode status,
+            WebRequest request) {
+        List<FieldViolation> errors = new ArrayList<>();
+        for (ParameterValidationResult result : exception.getParameterValidationResults()) {
+            if (result instanceof ParameterErrors parameterErrors) {
+                // A @Valid object parameter: report the fields inside it, like a @RequestBody.
+                parameterErrors.getFieldErrors().forEach(error -> errors.add(fieldViolation(error)));
+                parameterErrors.getGlobalErrors().forEach(error -> errors.add(objectViolation(error)));
+            } else {
+                String parameter = result.getMethodParameter().getParameterName();
+                for (MessageSourceResolvable error : result.getResolvableErrors()) {
+                    errors.add(new FieldViolation(parameter, messageOf(error)));
+                }
+            }
+        }
+        return handleExceptionInternal(exception, withErrors(exception.getBody(), status, errors),
+                headers, status, request);
+    }
+
+    /** Spring's default detail ("No static resource api/bookz.") would be confusing for an API. */
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+            NoResourceFoundException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        exception.getBody().setDetail("No endpoint %s /%s.".formatted(exception.getHttpMethod(),
+                exception.getResourcePath()));
+        return handleExceptionInternal(exception, exception.getBody(), headers, status, request);
+    }
+
+    /**
+     * Every response that the base class builds passes through here: malformed JSON, a wrong HTTP method, an unknown
+     * path and so on. Adds the generic {@code code} for the status ({@link #genericCodeFor}), unless the problem
+     * detail already has a code; then lets the base class build the response.
+     */
+    @Override
+    protected ResponseEntity<Object> createResponseEntity(
+            Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        // TODO: S04-03
+        throw new UnsupportedOperationException("TODO: S04-03");
+    }
+
+    /** Adds the code before the errors, so that every response lists its properties in the same order. */
+    private static ProblemDetail withErrors(ProblemDetail problem, HttpStatusCode status,
+                                            List<FieldViolation> errors) {
+        errors.sort(BY_FIELD_AND_MESSAGE);
+        problem.setProperty(CODE, genericCodeFor(status).name());
+        problem.setProperty(ERRORS, errors);
+        return problem;
+    }
+
+    private static FieldViolation fieldViolation(FieldError error) {
+        return new FieldViolation(error.getField(), messageOf(error));
+    }
+
+    /** An error about the object as a whole, such as a class-level constraint: name the object. */
+    private static FieldViolation objectViolation(ObjectError error) {
+        return new FieldViolation(error.getObjectName(), messageOf(error));
+    }
+
+    /** Bean validation always provides a message; a hand-made error might not. */
+    private static String messageOf(MessageSourceResolvable error) {
+        return Objects.requireNonNullElse(error.getDefaultMessage(), "is invalid");
+    }
+
+    /** The code for an error that Spring MVC detected; any other client error counts as invalid input. */
+    private static ErrorCode genericCodeFor(HttpStatusCode status) {
+        if (status.is5xxServerError()) {
+            return ErrorCode.INTERNAL_ERROR;
+        }
+        HttpStatus knownStatus = HttpStatus.resolve(status.value());
+        if (knownStatus == null) {
+            return ErrorCode.INVALID_INPUT;
+        }
+        return switch (knownStatus) {
+            case NOT_FOUND -> ErrorCode.NOT_FOUND;
+            case METHOD_NOT_ALLOWED -> ErrorCode.METHOD_NOT_ALLOWED;
+            case NOT_ACCEPTABLE -> ErrorCode.NOT_ACCEPTABLE;
+            case UNSUPPORTED_MEDIA_TYPE -> ErrorCode.UNSUPPORTED_MEDIA_TYPE;
+            default -> ErrorCode.INVALID_INPUT;
+        };
+    }
+}
