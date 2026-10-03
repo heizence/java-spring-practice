@@ -232,7 +232,7 @@ The syntax looks almost the same, so the differences are easy to miss:
 ## In real projects
 
 - **Accept general types, return specific ones.** Use wildcards in parameters (PECS) and interfaces such as `List` or `Collection` instead of `ArrayList`. Return plain types without wildcards. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
-- **No raw types, no ignored warnings.** Treat *unchecked* warnings like errors. Suppress one only on the smallest scope, with a comment that says why it's safe. → [Java style](../../docs/handbook/java-style.md)
+- **No raw types, no ignored warnings.** Treat *unchecked* warnings like errors. Suppress one only on the smallest scope, with a comment that says why it's safe. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
 - **Prefer `List<T>` to `T[]` in your APIs.** Arrays and generics don't mix well: there are no generic arrays, and array covariance is only checked at runtime. → [Collections and generics](../../docs/handbook/collections-and-generics.md)
 - **Generic value types are immutable records** that copy the collections they receive, like `Pair` and `Page` in J04-01. → [Immutability](../../docs/handbook/immutability.md)
 - **A lookup returns `Optional<T>`, never `null`**, like `TypedMap.get` in J04-03. → [Null and Optional](../../docs/handbook/null-and-optional.md)
@@ -332,7 +332,7 @@ Store the values in a `Map<Class<?>, Object>`. To turn an `Object` from the map 
 - **Reading that element into a `String` throws `ClassCastException`.** The compiler inserted a hidden `(String)` cast where the element is read. The program fails there, far away from the line that caused the problem. This is heap pollution, and it's why `TypedMap.put` checks its values with `type.cast` right away.
 - **Storing `42` in an `Object[]` that is really a `String[]` throws `ArrayStoreException`.** Arrays are *reified*: they know their element type at runtime, so the JVM checks every store. Generic collections can't do that, because of erasure.
 - **`int.class.isInstance(42)` is `false`.** `42` is boxed to an `Integer` first, and nothing is ever an instance of a primitive type. That's why `TypedMap` rejects `int.class` and points to `Integer.class`.
-- **The generic superclass of `new ArrayList<String>() { }` is `"java.util.ArrayList<java.lang.String>"`.** Erasure removes type arguments from objects, but not from class declarations. The anonymous class was declared as a subclass of `ArrayList<String>`, and its class file remembers that. Jackson's `TypeReference` and Spring's `ParameterizedTypeReference` are built on exactly this.
+- **The generic superclass of `new ArrayList<String>() { }` does mention `String`: its type name is `"java.util.ArrayList<java.lang.String>"`.** Erasure removes type arguments from objects, but not from class declarations. The anonymous class was declared as a subclass of `ArrayList<String>`, and its class file remembers that. Jackson's `TypeReference` and Spring's `ParameterizedTypeReference` are built on exactly this.
 </details>
 
 **Done?** Compare with the reference on the `solutions` branch, then ask yourself: Why does your `get` need no `@SuppressWarnings`? What does `get(List.class)` return, and why can't a `TypedMap` keep a `List<String>` and a `List<Integer>` apart?

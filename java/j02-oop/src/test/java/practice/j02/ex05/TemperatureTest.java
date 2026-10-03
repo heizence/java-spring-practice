@@ -4,9 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.DisplayName;
@@ -77,30 +74,6 @@ class TemperatureTest {
         }
 
         @Test
-        @DisplayName("compareTo() sorts temperatures from colder to warmer")
-        void sorting() {
-            var hot = Temperature.ofCelsius(35);
-            var cold = Temperature.ofCelsius(-10);
-            var mild = Temperature.ofFahrenheit(68); // 20 °C
-            List<Temperature> temperatures = new ArrayList<>(List.of(hot, cold, mild));
-
-            Collections.sort(temperatures);
-
-            assertThat(temperatures).containsExactly(cold, mild, hot);
-        }
-
-        @Test
-        @DisplayName("isWarmerThan() compares two temperatures")
-        void isWarmerThan() {
-            var warm = Temperature.ofCelsius(25);
-            var cool = Temperature.ofCelsius(15);
-
-            assertThat(warm.isWarmerThan(cool)).isTrue();
-            assertThat(cool.isWarmerThan(warm)).isFalse();
-            assertThat(warm.isWarmerThan(Temperature.ofCelsius(25))).isFalse();
-        }
-
-        @Test
         @DisplayName("toString() shows degrees Celsius with 2 decimal places")
         void toStringFormat() {
             assertThat(Temperature.ofCelsius(21.5)).hasToString("21.50 °C");
@@ -135,16 +108,6 @@ class TemperatureTest {
 
             assertThat(sum).isEqualTo(Temperature.ofCelsius(0.3));
             assertThat(sum.celsius()).isEqualTo(0.3);
-        }
-
-        @Test
-        @DisplayName("compareTo() returns 0 exactly when equals() is true")
-        void compareToConsistentWithEquals() {
-            var fromFahrenheit = Temperature.ofFahrenheit(39.2);
-            var fromCelsius = Temperature.ofCelsius(4);
-
-            assertThat(fromFahrenheit.compareTo(fromCelsius)).isZero();
-            assertThat(fromFahrenheit.compareTo(Temperature.ofCelsius(4.01))).isNegative();
         }
 
         @Test
@@ -255,15 +218,6 @@ class TemperatureTest {
             assertThatThrownBy(() -> temperature.plus(Double.MAX_VALUE)).isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> temperature.plus(Double.NaN)).isInstanceOf(IllegalArgumentException.class);
             assertThat(temperature.celsius()).isEqualTo(-273.0);
-        }
-
-        @Test
-        @DisplayName("isWarmerThan(null) and compareTo(null) throw NullPointerException")
-        void nullComparisons() {
-            var temperature = Temperature.ofCelsius(21.5);
-
-            assertThatThrownBy(() -> temperature.isWarmerThan(null)).isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> temperature.compareTo(null)).isInstanceOf(NullPointerException.class);
         }
     }
 }

@@ -18,12 +18,11 @@ import java.util.Optional;
  * <ul>
  *   <li>Keys are ordered by their {@code compareTo}. {@link #add} ignores a key that is already in the tree
  *       and returns {@code false}; otherwise it returns {@code true}.</li>
- *   <li>{@link #min()} and {@link #max()} return empty for an empty tree.</li>
+ *   <li>{@link #min()} returns empty for an empty tree.</li>
  *   <li>{@link #floor} returns the largest key that is less than or equal to the given key, or empty if every
  *       key is larger.</li>
- *   <li>{@link #inOrder()} returns all keys from smallest to largest, as an unmodifiable list.</li>
- *   <li>{@link #height()} is the number of nodes on the longest path from the root down to a leaf: 0 for an
- *       empty tree, 1 for a tree with one node.</li>
+ *   <li>{@link #inOrder()} returns all keys from smallest to largest, as an unmodifiable snapshot: keys added
+ *       later don't show up in a list you already have.</li>
  *   <li>{@code null} keys are rejected with {@link NullPointerException}.</li>
  * </ul>
  *
@@ -101,18 +100,6 @@ public class BinarySearchTree<K extends Comparable<K>> {
         return Optional.of(node.key);
     }
 
-    /** The largest key, or empty if the tree is empty. */
-    public Optional<K> max() {
-        if (root == null) {
-            return Optional.empty();
-        }
-        Node<K> node = root;
-        while (node.right != null) {
-            node = node.right;
-        }
-        return Optional.of(node.key);
-    }
-
     /** The largest key that is less than or equal to {@code key}, or empty if there is none. */
     public Optional<K> floor(K key) {
         Objects.requireNonNull(key, "key");
@@ -149,17 +136,5 @@ public class BinarySearchTree<K extends Comparable<K>> {
         inOrder(node.left, keys);
         keys.add(node.key);
         inOrder(node.right, keys);
-    }
-
-    /** The number of nodes on the longest path from the root to a leaf; 0 for an empty tree. */
-    public int height() {
-        return height(root);
-    }
-
-    private static int height(Node<?> node) {
-        if (node == null) {
-            return 0; // base case: an empty tree
-        }
-        return 1 + Math.max(height(node.left), height(node.right));
     }
 }

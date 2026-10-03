@@ -1,0 +1,3 @@
+# The auto-configurations in this jar, one fully qualified class name per line. Spring Boot reads every file with
+# this name on the classpath when an application starts with @EnableAutoConfiguration (part of @SpringBootApplication).
+com.example.platform.clock.ClockAutoConfiguration

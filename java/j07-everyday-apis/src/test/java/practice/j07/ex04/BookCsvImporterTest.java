@@ -134,14 +134,6 @@ class BookCsvImporterTest {
         }
 
         @Test
-        @DisplayName("turns two double quotes inside a quoted field into one")
-        void escapedQuotes() throws IOException {
-            Book book = importOne("9780135957059,\"The \"\"Pragmatic\"\" Programmer\",Andy Hunt,39.95");
-
-            assertThat(book.title()).isEqualTo("The \"Pragmatic\" Programmer");
-        }
-
-        @Test
         @DisplayName("reads an empty quoted field and an empty unquoted field as empty text")
         void emptyFields() throws IOException {
             Book book = importOne("9780000000001,\"\",,10");

@@ -33,9 +33,10 @@ import java.util.Objects;
  * <ul>
  *   <li>After the header, blank lines (empty, or only whitespace) are skipped. Every other line is one book.</li>
  *   <li>Fields are separated by commas. They aren't trimmed: spaces are part of the value.</li>
- *   <li>A field that starts with a double quote ({@code "}) is <em>quoted</em>. It ends at the next double quote that
- *       isn't doubled. Inside it, a comma is part of the value, and two double quotes ({@code ""}) stand for one.
- *       A quoted field ends on the same line.</li>
+ *   <li>A field that starts with a double quote ({@code "}) is <em>quoted</em>. It ends at the next double quote,
+ *       which must be on the same line. Inside it, a comma is part of the value. (Real CSV files write a double
+ *       quote inside a quoted value as {@code ""}. This importer leaves that out: the next double quote always ends
+ *       the field.)</li>
  *   <li>Anywhere else, a double quote is a normal character, and so is any text between a closing quote and the
  *       next comma.</li>
  *   <li>A row has exactly 4 fields: isbn, title, author and price. The author may be empty.</li>
@@ -118,13 +119,10 @@ public final class BookCsvImporter {
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (quoted) {
-                if (c != '"') {
-                    field.append(c);
-                } else if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
-                    field.append('"'); // "" inside a quoted field stands for one "
-                    i++; // skip the second quote
-                } else {
+                if (c == '"') {
                     quoted = false; // the closing quote
+                } else {
+                    field.append(c); // a comma in here is part of the value
                 }
             } else if (c == ',') {
                 fields.add(field.toString());

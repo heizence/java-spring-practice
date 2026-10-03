@@ -1,0 +1,92 @@
+spring:
+  application:
+    name: bookstore
+
+  # No URL, user or password: `bootRun` connects to the MySQL in compose.yaml (Spring Boot's Docker Compose support),
+  # and tests connect to their own MySQL container (Testcontainers).
+  datasource:
+    hikari:
+      data-source-properties:
+        # DATETIME columns hold UTC times. Tell MySQL Connector/J, so that plain JDBC code (JdbcClient, JdbcTemplate)
+        # also reads and writes Instants correctly, whatever the JVM's default time zone is.
+        connectionTimeZone: UTC
+
+  flyway:
+    # Flyway creates the schema and loads the seed data at startup: src/main/resources/db/migration/V*.sql.
+    enabled: true
+
+  jpa:
+    # Close the database session when the service's transaction ends, not when the response is written. Lazy
+    # loading in a controller then fails fast instead of running hidden queries.
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema. Hibernate only checks at startup that the entities match it, and never changes it.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          # Read and write DATETIME columns as UTC, whatever the JVM's default time zone is.
+          time_zone: UTC
+        query:
+          # A query that fetch-joins a collection can't be paged in SQL, so Hibernate would load every row and page
+          # in memory. Fail instead, so the problem shows up in tests.
+          fail_on_pagination_over_collection_fetch: true
+        # Deliberately not set:
+        # - default_batch_fetch_size: loading lazy associations in batches hides N+1 query problems. Add it once
+        #   you can see the problem it solves.
+        # - jdbc.batch_size: inserts can't be batched anyway, because every id is an AUTO_INCREMENT (IDENTITY) id.
+
+  web:
+    # Error messages, including bean validation messages, are always in English, whatever language the client asks
+    # for in its Accept-Language header.
+    locale: en
+    locale-resolver: fixed
+
+  lifecycle:
+    # At shutdown, Spring stops the application in phases (the web server, the task executor, …), and each phase
+    # gets at most this long. Kubernetes kills a container 30 s after asking it to stop, so stay well below that.
+    timeout-per-shutdown-phase: 20s
+
+  task:
+    execution:
+      shutdown:
+        # Let running @Async tasks (order confirmations) finish at shutdown, instead of interrupting them.
+        await-termination: true
+        await-termination-period: 10s
+
+server:
+  # Stop taking new requests, and let the running ones finish (up to the phase timeout above). This is Spring Boot's
+  # default; it's written here because the application relies on it.
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Only what operations need. The others (env, beans, heapdump, loggers, …) reveal internals or change the
+        # application, so they stay off the web.
+        include: "*"
+  endpoint:
+    health:
+      # List each check of a group with its status, but no details: details can reveal internals.
+      show-components: always
+      group:
+        # Kubernetes' liveness probe: is the application broken, so that only a restart helps? Never put a
+        # dependency here: a database outage would restart every instance, and the restarts wouldn't fix anything.
+        liveness:
+          include: livenessState
+        # Kubernetes' readiness probe: may this instance get traffic? It also needs to read the stock.
+        readiness:
+          include: readinessState, inventory
+
+logging:
+  pattern:
+    # Spring Boot prints this between the thread name and the logger name of every console line: the request id,
+    # from the MDC. Lines outside a request show [].
+    correlation: "[%X{requestId:-}] "
+  level:
+    # Flyway warns at every start that it was verified with MySQL up to 9.4 only. 9.7 works; the warning is noise.
+    org.flywaydb.core.internal.database.base.Database: error
+    # SQL logging is off. To see every statement Hibernate runs, and the values bound to it, uncomment these lines:
+    # org.hibernate.SQL: debug
+    # org.hibernate.orm.jdbc.bind: trace

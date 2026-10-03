@@ -34,4 +34,27 @@ listOf(
     "j10-jvm",
 ).forEach { module -> include("java:$module") }
 
-// Part 2 — Spring Boot (added in stage 2)
+// Part 2 — Spring Boot. A module is included once its folder exists.
+listOf(
+    "s01-boot-fundamentals",
+    "s02-configuration",
+    "s03-aop",
+    "s04-rest-apis",
+    "s05-database-foundations",
+    "s06-spring-data-jpa",
+    "s07-transactions",
+    "s08-concurrency-integrity",
+    "s09-events-async",
+    "s10-caching",
+    "s11-http-clients",
+    "s12-security",
+    "s13-testing-strategy",
+    "s14-production-readiness",
+).filter { module -> file("spring/$module/build.gradle.kts").exists() }
+    .forEach { module -> include("spring:$module") }
+
+// Maintainers only: the bookstore template that Part 2 modules are copied from (exists only on `authoring`).
+if (file(".authoring/bookstore-template/build.gradle.kts").exists()) {
+    include("bookstore-template")
+    project(":bookstore-template").projectDir = file(".authoring/bookstore-template")
+}

@@ -18,8 +18,8 @@ import java.util.Set;
  * </pre>
  *
  * <p>Each value can have a different type, so a plain {@code Map<Class<?>, Object>} would force a cast on every
- * {@code get}. Effective Java calls this pattern a <em>typesafe heterogeneous container</em>. Frameworks use it
- * for request attributes and other per-request context.
+ * {@code get}. Effective Java calls this pattern a <em>typesafe heterogeneous container</em>, and Guava's
+ * {@code ClassToInstanceMap} is one.
  *
  * <h2>Rules</h2>
  * <ul>

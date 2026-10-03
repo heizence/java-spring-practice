@@ -7,8 +7,8 @@ import practice.j04.ex03.ErasurePuzzles.Outcome;
  * matching method in {@link ErasurePuzzles} returns, then run {@code TypedMapTest}.
  *
  * <p>The constant's type tells you what kind of value to write: {@code true}/{@code false} for a
- * {@code Boolean}, a number for an {@code Integer}, text in quotes for a {@code String}, and for example
- * {@code Outcome.RETURNS_NORMALLY} for an {@code Outcome}.
+ * {@code Boolean}, a number for an {@code Integer}, and for example {@code Outcome.RETURNS_NORMALLY} for an
+ * {@code Outcome}.
  */
 final class ErasureAnswers {
 
@@ -27,6 +27,7 @@ final class ErasureAnswers {
     // 42 is boxed to an Integer, and nothing is an instance of int.class: primitives aren't objects.
     static final Boolean PRIMITIVE_CLASS_IS_INSTANCE = false;
     // Erasure removes type arguments from objects, not from class declarations. The anonymous class was
-    // declared as "extends ArrayList<String>", and its class file remembers that. Type tokens build on this.
-    static final String TYPE_ARGUMENT_OF_SUBCLASS = "java.util.ArrayList<java.lang.String>";
+    // declared as "extends ArrayList<String>", and its class file remembers that: the type name is
+    // "java.util.ArrayList<java.lang.String>". Type tokens build on this.
+    static final Boolean SUBCLASS_KEEPS_TYPE_ARGUMENT = true;
 }

@@ -1,0 +1,9 @@
+# Production settings, read on top of application.yml when the profile "prod" is active. This file is in git, so
+# secrets never go in here: the servers pass them as environment variables.
+
+bookstore:
+  mail:
+    api:
+      url: https://mail-api.example.com/v1/messages
+      # No key here. Each server sets the environment variable BOOKSTORE_MAIL_API_KEY, which relaxed binding turns
+      # into bookstore.mail.api.key. Without it, MailApiProperties' validation stops the application at startup.

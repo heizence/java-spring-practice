@@ -61,7 +61,9 @@ final class Catalog {
                 continue;
             }
             for (Path dir : list(partDir)) {
-                if (Files.isRegularFile(dir.resolve("README.md")) && Files.isRegularFile(dir.resolve("build.gradle.kts"))) {
+                boolean exerciseModule = dir.getFileName().toString().matches("[js]\\d{2}-.+");
+                if (exerciseModule && Files.isRegularFile(dir.resolve("README.md"))
+                        && Files.isRegularFile(dir.resolve("build.gradle.kts"))) {
                     modules.add(readModule(part, dir));
                 }
             }

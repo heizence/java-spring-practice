@@ -144,7 +144,7 @@ class PitfallsTest {
         }
 
         @Test
-        @DisplayName("empty batches give empty results")
+        @DisplayName("customersInOrderOfFirstOrder() of an empty batch is an empty list")
         void emptyBatches() {
             assertThat(OrderStats.customersInOrderOfFirstOrder(List.of())).isEmpty();
         }

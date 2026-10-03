@@ -1,0 +1,18 @@
+# MySQL for `./gradlew …:bootRun`. Spring Boot's Docker Compose support starts this service, connects the
+# application to it (it reads the database, user and password below), and stops it when the application stops.
+# Tests don't use this file: they start their own MySQL container with Testcontainers.
+#
+# The data survives restarts. To start again from the seed data, delete the container and its volume:
+#   docker compose down --volumes
+services:
+  mysql:
+    image: mysql:9.7
+    environment:
+      MYSQL_DATABASE: bookstore
+      MYSQL_USER: bookstore
+      MYSQL_PASSWORD: bookstore
+      MYSQL_ROOT_PASSWORD: bookstore
+    ports:
+      # Docker picks a free port, so a MySQL you already run on 3306 doesn't get in the way, and listens only on
+      # this computer (127.0.0.1). Spring Boot finds the port by itself; `docker compose port mysql 3306` shows it.
+      - "127.0.0.1::3306"

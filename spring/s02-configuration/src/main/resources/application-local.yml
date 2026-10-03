@@ -1,0 +1,7 @@
+# Settings for developers' machines. Spring Boot reads this file on top of application.yml when the profile "local"
+# is active: --spring.profiles.active=local, or the environment variable SPRING_PROFILES_ACTIVE=local.
+
+logging:
+  level:
+    # More detail from the bookstore's own code while developing; production keeps the default, INFO.
+    com.example.bookstore: debug

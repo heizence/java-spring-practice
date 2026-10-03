@@ -7,7 +7,7 @@ import practice.j01.ex02.Puzzles.Outcome;
  * {@link Puzzles} returns, then run {@code PuzzlesTest}.
  *
  * <p>The constant's type tells you what kind of literal to write. For example {@code 3} for an
- * {@code Integer}, {@code 3L} for a {@code Long}, {@code 'x'} for a {@code Character}, {@code "x"} for a
+ * {@code Integer}, {@code 3.5} for a {@code Double}, {@code 'x'} for a {@code Character}, {@code "x"} for a
  * {@code String}, {@code true}/{@code false} for a {@code Boolean}, and {@code Outcome.RETURNS_NORMALLY} for an
  * {@code Outcome}. If the compiler complains about a literal, that's a clue, too.
  */
@@ -24,9 +24,9 @@ final class Answers {
     static final Integer REMAINDER_OF_NEGATIVE = -1;
     // int arithmetic wraps around silently. Math.addExact would throw ArithmeticException instead.
     static final Integer OVERFLOW = Integer.MIN_VALUE;
-    // All operands are ints, so the multiplication overflows *before* the result is widened to long.
-    // Write 24L * 60 * ... to do the math in long. (The literal needs an L: 500654080 alone is an int.)
-    static final Long MULTIPLY_BEFORE_WIDENING = 500_654_080L;
+    // All operands are ints, so the multiplication overflows *before* the result is widened to long:
+    // microsPerDay is 500654080, not 86400000000. Write 24L * 60 * ... to do the math in long.
+    static final Boolean MULTIPLY_BEFORE_WIDENING = false;
     // Binary floating point can't represent 0.1 or 0.2 exactly. Use BigDecimal for money (J07-03).
     static final Double FLOATING_POINT = 0.30000000000000004;
     // A cast to int drops the fraction toward zero, so -3.99 becomes -3 (not -4).
@@ -57,7 +57,7 @@ final class Answers {
     static final Boolean NEW_STRING_COMPARE_WITH_DOUBLE_EQUALS = false;
     // 1 is boxed to an Integer, and Long.equals is only true for another Long.
     static final Boolean LONG_EQUALS_INTEGER = false;
-    // Unboxing calls count.intValue() behind the scenes, which fails on null.
+    // Unboxing calls count.intValue() for you, and that call fails on null.
     static final Outcome UNBOXING_NULL = Outcome.THROWS_NULL_POINTER_EXCEPTION;
 
     // Passing values to methods

@@ -11,9 +11,15 @@ import java.util.regex.Pattern;
 final class ExerciseIds {
 
     private static final Pattern PACKAGE = Pattern.compile("practice\\.([js])(\\d{2})\\.ex(\\d{2})(?:\\..*)?");
-    private static final Pattern TITLE_PREFIX = Pattern.compile("^[JS]\\d{2}-\\d{2}\\s*·\\s*");
+    private static final Pattern TITLE_PREFIX = Pattern.compile("^([JS]\\d{2}-\\d{2})\\s*·\\s*");
 
     private ExerciseIds() {
+    }
+
+    /** {@code "S04-02 · Create a book"} → {@code S04-02}. */
+    static Optional<String> fromDisplayName(String displayName) {
+        var matcher = TITLE_PREFIX.matcher(displayName);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 
     /** {@code practice.j05.ex09.LruCacheTest$Basic} → {@code J05-09}. */

@@ -61,8 +61,9 @@ public final class Greeting {
     }
 
     private static String displayName(String name) {
-        // strip() removes every kind of Unicode whitespace. The older trim() only removes characters up to
-        // U+0020 (space and control characters), so it would keep the full-width space U+3000.
+        // strip() removes every character that Character.isWhitespace accepts, as the rules require. The older
+        // trim() only removes characters up to U+0020 (space and control characters), so it would keep the
+        // full-width space U+3000.
         String stripped = name.strip();
         return stripped.isEmpty() ? "there" : stripped;
     }

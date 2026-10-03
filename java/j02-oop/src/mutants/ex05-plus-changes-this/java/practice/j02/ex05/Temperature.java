@@ -17,14 +17,12 @@ import java.util.Locale;
  *       {@value #MAX_CELSIUS} °C, inclusive. NaN and infinity aren't allowed either. Every factory and
  *       {@link #plus} throws {@link IllegalArgumentException} with the value in the message.</li>
  *   <li>{@link #plus} returns a new temperature; the temperature you call it on never changes.</li>
- *   <li>{@link #equals} and {@link #hashCode} compare the rounded value. {@link #compareTo} orders from colder to
- *       warmer and returns 0 exactly when {@code equals} is true. {@link #isWarmerThan} and {@link #compareTo}
- *       throw {@link NullPointerException} for {@code null}.</li>
+ *   <li>{@link #equals} and {@link #hashCode} compare the rounded value.</li>
  *   <li>{@link #toString()} shows degrees Celsius with 2 decimal places and a dot, such as {@code "21.50 °C"} or
  *       {@code "-0.50 °C"}.</li>
  * </ul>
  */
-public final class Temperature implements Comparable<Temperature> {
+public final class Temperature {
 
     /** The lowest possible temperature: absolute zero. */
     public static final double ABSOLUTE_ZERO_CELSIUS = -273.15;
@@ -32,8 +30,8 @@ public final class Temperature implements Comparable<Temperature> {
     /** The highest temperature this class accepts, far above anything an application measures. */
     public static final double MAX_CELSIUS = 1_000_000;
 
-    // Whole hundredths of a degree: 2150 means 21.50 °C. A long compares exactly, unlike a double, so equals,
-    // hashCode and compareTo can't disagree. The limits are hundredths too.
+    // Whole hundredths of a degree: 2150 means 21.50 °C. A long compares exactly, unlike a double, so equals and
+    // hashCode can't disagree. The limits are hundredths too.
     private static final long MIN_HUNDREDTHS = -27_315;
     private static final long MAX_HUNDREDTHS = 100_000_000;
 
@@ -79,16 +77,6 @@ public final class Temperature implements Comparable<Temperature> {
     public Temperature plus(double celsiusDelta) {
         hundredths = ofCelsius(celsius() + celsiusDelta).hundredths;
         return this;
-    }
-
-    /** {@code true} if this temperature is warmer than {@code other}. */
-    public boolean isWarmerThan(Temperature other) {
-        return compareTo(other) > 0;
-    }
-
-    @Override
-    public int compareTo(Temperature other) {
-        return Long.compare(hundredths, other.hundredths);
     }
 
     @Override

@@ -110,7 +110,7 @@ bucket 10: ("apple", 3)
 This only works if `equals` and `hashCode` agree: **equal objects must have equal hash codes**. Otherwise two equal keys land in different buckets, and `get` looks in the wrong one. (Unequal objects may share a hash code; that only costs speed.) So if you override `equals`, override `hashCode` with the same fields. Records do both for you, from all of their components, and so do `String`, `Integer`, `LocalDate` and enums:
 
 ```java
-record Sku(String code) {}                  // equals() and hashCode() come for free
+record Sku(String code) {}                  // the record generates equals() and hashCode()
 
 Map<Sku, Integer> stock = new HashMap<>();
 stock.put(new Sku("BK-1"), 3);
@@ -283,7 +283,7 @@ Two things to know:
 
 ### 12. Removing elements while you iterate
 
-A for-each loop uses an `Iterator` behind the scenes. `ArrayList` and the other `java.util` collections count their own changes. If a collection changes while an iterator walks through it, and the change doesn't go through that iterator, the iterator's next step throws `ConcurrentModificationException`. "Concurrent" doesn't mean threads here: one thread is enough.
+A for-each loop uses a hidden `Iterator`. `ArrayList` and the other `java.util` collections count their own changes. If a collection changes while an iterator walks through it, and the change doesn't go through that iterator, the iterator's next step throws `ConcurrentModificationException`. "Concurrent" doesn't mean threads here: one thread is enough.
 
 ```java
 for (Order order : orders) {
@@ -423,7 +423,7 @@ Graphs with weights, such as travel times, need Dijkstra's algorithm, which repl
 
 - **Declare interfaces, return empty collections.** Fields, parameters and return types use `List`, `Set` and `Map`. A method that finds nothing returns an empty collection, never `null`. See [Collections and generics](../../docs/handbook/collections-and-generics.md) and [Null and Optional](../../docs/handbook/null-and-optional.md).
 - **Name a map after what it maps:** `priceBySku`, `ordersByCustomerId`. See [Java style](../../docs/handbook/java-style.md).
-- **Copy at the boundaries.** A constructor stores `List.copyOf(items)`, and a record with a collection component does the same in its compact constructor. Then no caller can change the object's state behind its back. See [Immutability](../../docs/handbook/immutability.md).
+- **Copy at the boundaries.** A constructor stores `List.copyOf(items)`, and a record with a collection component does the same in its compact constructor. Then no caller can change the object's state from the outside. See [Immutability](../../docs/handbook/immutability.md).
 - **Immutable keys.** Map keys and set elements are records, strings, numbers or enums. Never a mutable object, such as a JPA entity whose id is set only when it's saved (S06).
 - **Choose by how you access the data.** Start with `ArrayList`, `HashMap`, `HashSet` and `ArrayDeque`. Choose `LinkedHashMap` when the order matters, `TreeMap` for sorted keys and range questions, and `PriorityQueue` for "the next one by priority". Avoid `LinkedList`, `Stack`, `Vector` and `Hashtable`.
 - **Watch for hidden O(n²).** A `list.contains` or `list.remove(object)` inside a loop over another large collection is the most common performance bug in collection code. Put the side you look up into a `HashSet` or a `HashMap` first.
@@ -456,7 +456,7 @@ Sixteen small puzzles about collection behavior that surprises developers who co
 - **`List.copyOf(source)` still shows `[a]`.** It's a copy, so later changes to the source don't show up.
 - **`numbers.reversed()` shows `[4, 3, 2, 1]`.** `reversed()` returns a view in reverse order, not a reversed copy, so it sees the 4 that was added later.
 - **`getFirst()` on an empty list throws `NoSuchElementException`.** TypeScript's `array[0]` gives `undefined`; Java fails loudly instead.
-- **Removing inside a for-each loop throws `ConcurrentModificationException`.** The loop's hidden iterator notices on its next step that the list changed behind its back. Write `numbers.removeIf(n -> n % 2 == 0)` instead.
+- **Removing inside a for-each loop throws `ConcurrentModificationException`.** On its next step, the loop's hidden iterator notices that the list changed without going through it. Write `numbers.removeIf(n -> n % 2 == 0)` instead.
 - **Removing the second-to-last element gives `[a, b, d]`, without an exception.** After the removal the list has 3 elements, and the iterator's position is already 3, so `hasNext()` returns `false`. The loop ends without looking at `"d"`. The fail-fast check runs in `next()`, which is never called again. Fail-fast is best effort: never rely on the exception to find this bug for you.
 - **`numbers.remove(1)` gives `[1, 3]`.** For a `List<Integer>`, the `int` argument matches `remove(int index)` exactly, so it removes the element at index 1, which is 2.
 - **`numbers.remove(Integer.valueOf(1))` gives `[2, 3]`.** An `Integer` argument matches `remove(Object)`, which removes the element equal to 1.

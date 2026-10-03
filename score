@@ -35,6 +35,10 @@ status=$?
 compile_failed="$(grep -oE "Execution failed for task ':(java|spring):[^:']+:compile[A-Za-z]*Java'" build/score.log \
   | sed -E "s/.*:(java|spring):([^:]+):.*/\2/" | sort -u | paste -sd, -)"
 
+if grep -q -E "Could not find a valid Docker environment|Cannot connect to the Docker daemon" build/score.log; then
+  echo "⚠ Docker isn't running. Part 2 (Spring) tests need it for MySQL: start Docker Desktop and run ./score again." >&2
+fi
+
 if [[ $status -ne 0 && -z "$compile_failed" ]]; then
   echo "Gradle stopped with an error that isn't a compile error. The end of the log (build/score.log):" >&2
   tail -n 30 build/score.log >&2

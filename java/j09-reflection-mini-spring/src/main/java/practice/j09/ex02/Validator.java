@@ -45,6 +45,7 @@ public final class Validator {
     private Validator() {
     }
 
+    /** Returns every rule that {@code object} breaks, sorted by field name, then by message. */
     public static List<Violation> validate(Object object) {
         Objects.requireNonNull(object, "object");
         List<Violation> violations = new ArrayList<>();
@@ -56,7 +57,8 @@ public final class Validator {
                 check(field, object, violations);
             }
         }
-        // getDeclaredFields() follows declaration order, but the rules want a stable, sorted result.
+        // getDeclaredFields() promises no order (HotSpot happens to use declaration order), and the rules want a
+        // stable, sorted result.
         return violations.stream().sorted(BY_FIELD_THEN_MESSAGE).toList();
     }
 

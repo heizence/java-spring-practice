@@ -41,7 +41,7 @@ final class Answers {
 
     // Removing elements while iterating
 
-    // The loop's hidden iterator sees that the list changed behind its back and throws on its next step.
+    // The loop's hidden iterator sees that the list changed without going through it, and throws on its next step.
     static final Outcome REMOVE_INSIDE_FOR_EACH = Outcome.THROWS_CONCURRENT_MODIFICATION_EXCEPTION;
     // After "c" is removed, hasNext() is false: the loop ends early, never looks at "d", and doesn't throw.
     static final String REMOVE_SECOND_TO_LAST_INSIDE_FOR_EACH = "[a, b, d]";

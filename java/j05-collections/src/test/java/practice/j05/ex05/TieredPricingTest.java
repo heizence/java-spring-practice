@@ -24,7 +24,7 @@ class TieredPricingTest {
     @DisplayName("Basic")
     class Basic {
 
-        @ParameterizedTest(name = "{0} items cost {1} cents each")
+        @ParameterizedTest(name = "{0} items cost {1} cents each", quoteTextArguments = false)
         @CsvSource({"1, 500", "9, 500", "10, 450", "49, 450", "50, 400", "1000, 400"})
         @DisplayName("returns the unit price of the tier that the quantity falls into")
         void priceOfTier(int quantity, long expectedUnitPrice) {

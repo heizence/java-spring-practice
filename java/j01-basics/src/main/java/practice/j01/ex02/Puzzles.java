@@ -26,9 +26,9 @@ final class Puzzles {
         return Integer.MAX_VALUE + 1;
     }
 
-    static long multiplyBeforeWidening() {
+    static boolean multiplyBeforeWidening() {
         long microsPerDay = 24 * 60 * 60 * 1000 * 1000;
-        return microsPerDay;
+        return microsPerDay == 86_400_000_000L;
     }
 
     static double floatingPoint() {

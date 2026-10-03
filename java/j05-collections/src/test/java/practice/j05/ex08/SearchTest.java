@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -141,7 +143,8 @@ class SearchTest {
         }
 
         @Test
-        @DisplayName("answers 100,000 lookups in an array of 1,000,000 values quickly (a loop over all values times out)")
+        @Timeout(value = 2, unit = TimeUnit.SECONDS) // binary search needs well under a second for this
+        @DisplayName("answers 100,000 lookups in 1,000,000 values within 2 seconds, which a loop over all values can't")
         void largeInputIsFast() {
             int[] evens = new int[1_000_000];
             for (int i = 0; i < evens.length; i++) {

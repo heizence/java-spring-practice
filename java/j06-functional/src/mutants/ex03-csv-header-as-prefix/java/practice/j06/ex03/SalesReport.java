@@ -53,12 +53,20 @@ public final class SalesReport {
         this.orders = List.copyOf(orders);
     }
 
+    /**
+     * Step 1. The revenue of each category in cents: the sum of quantity × unit price over all lines of that
+     * category. Categories are in alphabetical order.
+     */
     public SortedMap<String, Long> revenueByCategory() {
         // groupingBy(classifier, mapFactory, downstream): TreeMap::new keeps the categories sorted, and
         // summingLong adds up each group instead of collecting it into a list.
         return activeLines().collect(groupingBy(OrderLine::category, TreeMap::new, summingLong(OrderLine::totalCents)));
     }
 
+    /**
+     * Step 2. How many orders have each status, cancelled ones included, as an {@link java.util.EnumMap}: statuses
+     * come in the order of the {@link Status} enum. Statuses without orders are left out.
+     */
     public Map<Status, Long> orderCountByStatus() {
         // An EnumMap is a compact array indexed by the enum's ordinal, and iterates in declaration order.
         // It needs the enum class, so the factory is a lambda rather than EnumMap::new.
@@ -66,6 +74,13 @@ public final class SalesReport {
                 .collect(groupingBy(Order::status, () -> new EnumMap<>(Status.class), counting()));
     }
 
+    /**
+     * Step 3. The ids of the orders, split by total: under {@code true}, the orders whose total is at least
+     * {@code thresholdCents}; under {@code false}, the others. Both keys are always there, even when a list is empty.
+     * The ids keep the order of the orders.
+     *
+     * @throws IllegalArgumentException if {@code thresholdCents} is less than 1
+     */
     public Map<Boolean, List<String>> partitionByTotal(long thresholdCents) {
         if (thresholdCents < 1) {
             throw new IllegalArgumentException("thresholdCents must be at least 1, but was " + thresholdCents);
@@ -76,6 +91,10 @@ public final class SalesReport {
                 .collect(partitioningBy(order -> order.totalCents() >= thresholdCents, mapping(Order::id, toList())));
     }
 
+    /**
+     * Step 4. The products each customer bought, each product once. Customers are in alphabetical order, and so are
+     * the products in each set.
+     */
     public SortedMap<String, Set<String>> productsByCustomer() {
         // flatMapping is the downstream version of flatMap: one order gives several products.
         // toCollection(TreeSet::new) removes duplicates and sorts.
@@ -85,6 +104,10 @@ public final class SalesReport {
                                 toCollection(TreeSet::new))));
     }
 
+    /**
+     * Step 5. How much each customer spent in cents, over all their orders. Customers are in the order of their first
+     * order in the list.
+     */
     public SequencedMap<String, Long> totalByCustomer() {
         // Without the merge function (Long::sum), toMap throws IllegalStateException on the second order of the
         // same customer. LinkedHashMap::new keeps the order in which customers first appear.
@@ -92,12 +115,22 @@ public final class SalesReport {
                 .collect(toMap(Order::customer, Order::totalCents, Long::sum, LinkedHashMap::new));
     }
 
+    /**
+     * Step 6. The revenue by category as CSV text: the header line {@code category,revenue_cents}, then one line per
+     * category in alphabetical order, such as {@code books,11200}. Lines are separated by {@code "\n"}, and there is
+     * no line break at the end. Without orders that count, the result is the header line alone.
+     */
     public String revenueCsv() {
         Stream<String> rows = revenueByCategory().entrySet().stream()
                 .map(entry -> entry.getKey() + "," + entry.getValue());
         return rows.collect(joining("\n", "category,revenue_cents\n", ""));
     }
 
+    /**
+     * Step 7. For each category, the customer who spent the most on it: the sum of their line totals in that
+     * category, over all their orders. If customers spent the same amount, the name that comes first alphabetically
+     * wins. Categories are in alphabetical order.
+     */
     public SortedMap<String, String> topCustomerByCategory() {
         // A local record: a named pair that exists only inside this method. It keeps the customer next to each
         // line after flatMap, which would otherwise lose the order the line came from.
