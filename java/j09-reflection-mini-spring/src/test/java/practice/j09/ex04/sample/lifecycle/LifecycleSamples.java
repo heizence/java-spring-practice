@@ -49,26 +49,6 @@ public final class LifecycleSamples {
     }
 
     @Component
-    public static class TwoInitMethods {
-
-        @Init
-        public void first() {
-        }
-
-        @Init
-        public void second() {
-        }
-    }
-
-    @Component
-    public static class InitWithParameter {
-
-        @Init
-        public void init(String name) {
-        }
-    }
-
-    @Component
     public static class FailingInit {
 
         @Init

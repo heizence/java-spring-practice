@@ -39,7 +39,7 @@ Callers depend only on what they need (a `List`), so you can change the implemen
 - **Don't modify a collection while iterating over it** with a for-each loop. It throws `ConcurrentModificationException`. Use `removeIf(…)`, an `Iterator`'s `remove()`, or build a new collection.
 - **Keys need correct `equals` and `hashCode`**, and must not change while they're in a map or set (see [Immutability](immutability.md)).
 - **Watch out for `List<Integer>.remove(1)`.** It removes the element at *index* 1. To remove the *value* 1, write `remove(Integer.valueOf(1))`.
-- **Java 21 sequenced collections** add `getFirst()`, `getLast()`, `addFirst()`, `removeLast()` and `reversed()` to lists, deques and ordered sets and maps. Prefer them over `list.get(list.size() - 1)`.
+- **Java 21 sequenced collections** add `getFirst()`, `getLast()`, `addFirst()`, `removeLast()` and `reversed()` to lists, deques and ordered sets, and `firstEntry()`, `lastEntry()`, `pollFirstEntry()` and `reversed()` to ordered maps. Prefer them over `list.get(list.size() - 1)`.
 
 ## Generics
 

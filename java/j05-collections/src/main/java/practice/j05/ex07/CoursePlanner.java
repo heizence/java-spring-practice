@@ -23,7 +23,7 @@ public final class CoursePlanner {
      *       one comes next ({@code String.compareTo}). So the same input always gives the same order.</li>
      *   <li>If the prerequisites contain a cycle (including a course that requires itself), no valid order
      *       exists: throws {@link IllegalStateException} whose message names every course that could not be
-     *       placed.</li>
+     *       placed, and no course that could.</li>
      *   <li>A prerequisite listed twice for the same course is harmless. The input map isn't changed.</li>
      *   <li>A {@code null} map, course, list or prerequisite throws {@link NullPointerException}.</li>
      *   <li>Use Kahn's algorithm, with a {@link java.util.PriorityQueue} for the courses that are ready.</li>

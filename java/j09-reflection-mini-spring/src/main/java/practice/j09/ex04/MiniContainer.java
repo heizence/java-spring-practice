@@ -31,9 +31,9 @@ import java.util.SequencedSet;
  *       cycle whose creation started, such as {@code [A, B, A]}. Classes that only lead into the cycle, and beans
  *       that are already finished, aren't part of the path.</li>
  *   <li><b>{@code @Init}.</b> A component class may have one public method annotated {@link Init}, without
- *       parameters. It runs right after the bean's constructor, so a bean's {@code @Init} method runs after the
- *       {@code @Init} methods of the beans it depends on. Several {@code @Init} methods, or one with parameters:
- *       {@link BeanCreationException}.</li>
+ *       parameters. (The test classes follow this rule, so the container doesn't need to check it.) It runs right
+ *       after the bean's constructor, so a bean's {@code @Init} method runs after the {@code @Init} methods of the
+ *       beans it depends on.</li>
  *   <li><b>Failures.</b> When a constructor or an {@code @Init} method throws, the container throws a
  *       {@link BeanCreationException} whose cause is the original exception, not an
  *       {@link java.lang.reflect.InvocationTargetException}.</li>
@@ -54,7 +54,7 @@ public final class MiniContainer {
     /**
      * Creates a container for these component classes, and creates all their beans.
      *
-     * @throws IllegalArgumentException if a class isn't a component, or appears twice
+     * @throws IllegalArgumentException if a class isn't a component, or appears twice. The message names the class.
      */
     public static MiniContainer of(Class<?>... componentClasses) {
         // TODO: J09-04

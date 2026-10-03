@@ -1,7 +1,7 @@
 package practice.j02.ex03;
 
 /**
- * A rule that lowers a price, such as "3,000 won off" or "10% off". Prices are whole won.
+ * A rule that lowers a price, such as "3,000 won off" or "half price". Prices are whole won.
  *
  * <p>This class uses the <em>template method</em> pattern: {@link #apply} is {@code final} and holds the rules that
  * every discount must follow. Subclasses only decide how much to take off, in {@link #discount}.

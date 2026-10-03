@@ -114,7 +114,7 @@ Every other type is a *reference type*: `String`, arrays, and every class. A var
 
 **`final`** works like TypeScript's `const`: the variable can't be assigned again. Like `const`, it doesn't freeze the object: the elements of a `final` array can still change. Constants are `static final` fields with UPPER_SNAKE_CASE names: `static final int MAX_LENGTH = 64;`.
 
-**Conversions.** Java converts automatically when nothing can be lost (`int` to `long` to `double`). In the other direction you need a *cast*, which can lose information: `(int) 3.99` is `3`, and `(int) 3_000_000_000L` is `-1294967296`.
+**Conversions.** Java converts automatically to a wider type: from `int` to `long`, and from `int` or `long` to `double`. (A `double` keeps only about 16 significant digits, so a very large `long` can lose its last digits on the way.) In the other direction you need a *cast*, which can lose information: `(int) 3.99` is `3`, and `(int) 3_000_000_000L` is `-1294967296`.
 
 ### 4. Operators and integer math
 
@@ -128,7 +128,7 @@ Math.floorMod(-7, 3)                  // 2: always between 0 and 3 - 1
 Integer.MAX_VALUE + 1                 // -2147483648: int arithmetic wraps around silently
 Math.addExact(Integer.MAX_VALUE, 1)   // throws ArithmeticException instead
 1 / 0                                 // throws ArithmeticException
-1.0 / 0                               // Infinity
+1.0 / 0                               // Infinity, the constant Double.POSITIVE_INFINITY
 ```
 
 - An `int` goes from -2,147,483,648 to 2,147,483,647. The range isn't symmetric: there is one more negative number than there are positive ones.
@@ -214,9 +214,9 @@ String json = """
 | `String.join(separator, parts)` | `String.join("-", "a", "b")` | `"a-b"` |
 | `repeat(n)` | `"ab".repeat(3)` | `"ababab"` |
 
-Two of these have older look-alikes. `strip()` removes every kind of Unicode whitespace, but the older `trim()` only removes ASCII spaces and control characters, so prefer `strip()`. And pass `Locale.ROOT` to `toUpperCase` and `toLowerCase` for codes and identifiers: with a Turkish locale, `"i".toUpperCase()` is `"İ"`.
+Two of these have older look-alikes. `strip()` removes every character that `Character.isWhitespace` accepts, including the full-width space (U+3000) of Korean and Japanese text, but the older `trim()` only removes ASCII spaces and control characters, so prefer `strip()`. And pass `Locale.ROOT` to `toUpperCase` and `toLowerCase` for codes and identifiers: with a Turkish locale, `"i".toUpperCase()` is `"İ"`.
 
-**Characters.** A `char` is one UTF-16 code unit, and the `Character` class has the tools: `Character.isLetter(c)`, `isDigit(c)`, `isLetterOrDigit(c)`, `isWhitespace(c)`, `toUpperCase(c)`. Korean syllables are letters without letter case: `Character.isLetter('한')` is `true`, and `Character.toUpperCase('한')` is `'한'`. An emoji takes two `char`s, in the same way that `"😀".length` is `2` in JavaScript. Loop over the characters of a string like this:
+**Characters.** A `char` is one UTF-16 code unit, and the `Character` class has the tools: `Character.isLetter(c)`, `isDigit(c)`, `isLetterOrDigit(c)`, `isWhitespace(c)`, `toUpperCase(c)`. Korean syllables are letters without letter case: `Character.isLetter('한')` is `true`, and `Character.toUpperCase('한')` is `'한'`. An emoji such as 😀 takes two `char`s, in the same way that `"😀".length` is `2` in JavaScript. Loop over the characters of a string like this:
 
 ```java
 for (char c : text.toCharArray()) { ... }

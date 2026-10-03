@@ -16,15 +16,10 @@ import org.junit.jupiter.api.Test;
 import practice.j09.ex01.Samples.Account;
 import practice.j09.ex01.Samples.Alarm;
 import practice.j09.ex01.Samples.ConfigFile;
-import practice.j09.ex01.Samples.Empty;
-import practice.j09.ex01.Samples.Fraction;
 import practice.j09.ex01.Samples.Message;
-import practice.j09.ex01.Samples.Named;
 import practice.j09.ex01.Samples.Point;
 import practice.j09.ex01.Samples.SavingsAccount;
-import practice.j09.ex01.Samples.Segment;
 import practice.j09.ex01.Samples.Shape;
-import practice.j09.ex01.Samples.Shout;
 import practice.j09.ex01.Samples.Singleton;
 import practice.j09.ex01.Samples.Temperature;
 import practice.j09.ex01.Samples.Ticket;
@@ -107,12 +102,6 @@ class InspectorTest {
 
             assertThat(result).isNull();
             assertThat(account.balanceCents()).isEqualTo(2_000);
-        }
-
-        @Test
-        @DisplayName("describeRecord() lists the components in the format of a record's toString()")
-        void describeRecord() {
-            assertThat(Inspector.describeRecord(new Point(1, 2))).isEqualTo("Point[x=1, y=2]");
         }
     }
 
@@ -217,39 +206,6 @@ class InspectorTest {
         @DisplayName("invoke() works on JDK classes and boxes a primitive result")
         void invokeOnJdkClass() {
             assertThat(Inspector.invoke("text", "length")).isEqualTo(4);
-        }
-
-        @Test
-        @DisplayName("describeRecord() ignores a custom toString()")
-        void describeIgnoresToString() {
-            assertThat(Inspector.describeRecord(new Fraction(1, 2))).isEqualTo("Fraction[numerator=1, denominator=2]");
-        }
-
-        @Test
-        @DisplayName("describeRecord() reads the values through the accessor methods")
-        void describeUsesAccessors() {
-            assertThat(Inspector.describeRecord(new Shout("hi"))).isEqualTo("Shout[word=HI]");
-        }
-
-        @Test
-        @DisplayName("describeRecord() of a record without components")
-        void describeEmptyRecord() {
-            assertThat(Inspector.describeRecord(new Empty())).isEqualTo("Empty[]");
-        }
-
-        @Test
-        @DisplayName("describeRecord() shows a null value as null")
-        void describeNull() {
-            assertThat(Inspector.describeRecord(new Named(null))).isEqualTo("Named[name=null]");
-        }
-
-        @Test
-        @DisplayName("describeRecord() uses the toString() of the component values")
-        void describeNestedRecord() {
-            var segment = new Segment(new Point(0, 0), new Point(3, 4));
-
-            assertThat(Inspector.describeRecord(segment))
-                    .isEqualTo("Segment[from=Point[x=0, y=0], to=Point[x=3, y=4]]");
         }
     }
 
@@ -370,7 +326,6 @@ class InspectorTest {
             assertThatThrownBy(() -> Inspector.invoke(null, "toString")).isInstanceOf(NullPointerException.class);
             assertThatThrownBy(() -> Inspector.invoke(new Account("mina"), null))
                     .isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> Inspector.describeRecord(null)).isInstanceOf(NullPointerException.class);
         }
     }
 }

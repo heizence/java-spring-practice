@@ -7,8 +7,8 @@ import practice.j04.ex03.ErasurePuzzles.Outcome;
  * matching method in {@link ErasurePuzzles} returns, then run {@code TypedMapTest}.
  *
  * <p>The constant's type tells you what kind of value to write: {@code true}/{@code false} for a
- * {@code Boolean}, a number for an {@code Integer}, text in quotes for a {@code String}, and for example
- * {@code Outcome.RETURNS_NORMALLY} for an {@code Outcome}.
+ * {@code Boolean}, a number for an {@code Integer}, and for example {@code Outcome.RETURNS_NORMALLY} for an
+ * {@code Outcome}.
  */
 final class ErasureAnswers {
 
@@ -20,5 +20,5 @@ final class ErasureAnswers {
     static final Outcome READ_FROM_POLLUTED_LIST = null;
     static final Outcome STORE_IN_COVARIANT_ARRAY = null;
     static final Boolean PRIMITIVE_CLASS_IS_INSTANCE = null;
-    static final String TYPE_ARGUMENT_OF_SUBCLASS = null;
+    static final Boolean SUBCLASS_KEEPS_TYPE_ARGUMENT = null;
 }

@@ -128,8 +128,11 @@ public final class ScoreListener implements TestExecutionListener {
         }
         TestIdentifier outermost = classes.getLast();
         String className = ((ClassSource) outermost.getSource().orElseThrow()).getClassName();
-        Optional<String> exerciseId = ExerciseIds.fromClassName(className);
-        if (exerciseId.isEmpty()) {
+        // Part 2 tests live in the application's own packages, so the display name ("S04-02 · …") names the
+        // exercise. Part 1 tests can also be identified by their package (practice.j05.ex09).
+        Optional<String> exerciseId = ExerciseIds.fromDisplayName(outermost.getDisplayName())
+                .or(() -> ExerciseIds.fromClassName(className));
+        if (exerciseId.isEmpty() && !className.startsWith("practice.") && !className.startsWith("com.example.")) {
             return Optional.empty();
         }
 
@@ -143,7 +146,9 @@ public final class ScoreListener implements TestExecutionListener {
         } else {
             testName = id.getDisplayName();
         }
-        return Optional.of(new Description(exerciseId.get(), title, tier, testName));
+        // Tests that belong to no exercise (examples, template checks) are recorded too, so maintainers' checks can
+        // notice when one of them fails. The score report doesn't count them.
+        return Optional.of(new Description(exerciseId.orElse(ResultRow.NO_EXERCISE), title, tier, testName));
     }
 
     /** The failure message on one line, e.g. "Expecting actual: 3 to be equal to: 4". */

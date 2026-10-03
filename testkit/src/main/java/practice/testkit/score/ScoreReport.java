@@ -108,7 +108,7 @@ public final class ScoreReport {
      *                    invisible to the learner's score
      */
     record ModuleScore(Module module, boolean compileFailed, boolean ran, List<ExerciseScore> exercises,
-                       Set<String> uncataloged) {
+                       Set<String> uncataloged, List<ResultRow> unscoredFailures) {
 
         long done() {
             return exercises.stream().filter(e -> e.state() == State.DONE).count();
@@ -173,9 +173,12 @@ public final class ScoreReport {
                 .toList();
         Set<String> cataloged = module.exercises().stream().map(Exercise::id).collect(Collectors.toSet());
         Set<String> uncataloged = rowsByExercise.keySet().stream()
-                .filter(id -> !cataloged.contains(id))
+                .filter(id -> !cataloged.contains(id) && !id.equals(ResultRow.NO_EXERCISE))
                 .collect(Collectors.toCollection(java.util.TreeSet::new));
-        return new ModuleScore(module, compileFailed, ran, exercises, uncataloged);
+        List<ResultRow> unscoredFailures = rowsByExercise.getOrDefault(ResultRow.NO_EXERCISE, List.of()).stream()
+                .filter(ResultRow::failed)
+                .toList();
+        return new ModuleScore(module, compileFailed, ran, exercises, uncataloged, unscoredFailures);
     }
 
     private static State stateOf(Exercise exercise, boolean ran, List<ResultRow> rows, List<MutantResult> learner) {
@@ -358,6 +361,10 @@ public final class ScoreReport {
             for (String id : module.uncataloged()) {
                 problems.add(module.module().name() + ": tests for " + id + " have no '### " + id
                         + " · …' heading in README.md, so the score ignores them");
+            }
+            for (ResultRow failure : module.unscoredFailures()) {
+                problems.add(module.module().name() + ": a test outside the exercises failed: " + failure.exerciseTitle()
+                        + " › " + failure.tier() + " › " + failure.testName() + " — " + failure.message());
             }
             for (ExerciseScore score : module.exercises()) {
                 String name = score.exercise().id() + " " + score.exercise().title();

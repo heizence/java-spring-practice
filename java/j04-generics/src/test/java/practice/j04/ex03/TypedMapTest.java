@@ -251,9 +251,9 @@ class TypedMapTest {
         }
 
         @Test
-        @DisplayName("the generic superclass of new ArrayList<String>() { }")
-        void typeArgumentOfSubclass() {
-            Predict.check(ErasureAnswers.TYPE_ARGUMENT_OF_SUBCLASS, ErasurePuzzles.typeArgumentOfSubclass());
+        @DisplayName("whether the generic superclass of new ArrayList<String>() { } mentions String")
+        void subclassKeepsTypeArgument() {
+            Predict.check(ErasureAnswers.SUBCLASS_KEEPS_TYPE_ARGUMENT, ErasurePuzzles.subclassKeepsTypeArgument());
         }
     }
 }

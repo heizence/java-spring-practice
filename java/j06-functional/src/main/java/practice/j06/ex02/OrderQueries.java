@@ -28,7 +28,7 @@ public final class OrderQueries {
      * The {@code n} orders with the highest totals, highest first. Orders with the same total are sorted by id, so
      * the result doesn't depend on the order of the input. With fewer than {@code n} orders, you get all of them.
      *
-     * @throws IllegalArgumentException if {@code n} is negative
+     * @throws IllegalArgumentException if {@code n} is negative, with {@code n} in its message
      */
     public static List<Order> topByTotal(List<Order> orders, int n) {
         // TODO: J06-02

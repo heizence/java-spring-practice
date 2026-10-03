@@ -56,9 +56,10 @@ final class ErasurePuzzles {
         return int.class.isInstance(42);
     }
 
-    static String typeArgumentOfSubclass() {
+    static boolean subclassKeepsTypeArgument() {
         Object list = new ArrayList<String>() { };   // an anonymous subclass of ArrayList<String>
-        return list.getClass().getGenericSuperclass().getTypeName();
+        String superclass = list.getClass().getGenericSuperclass().getTypeName();
+        return superclass.contains("String");
     }
 
     /** How a puzzle ends: with a value, or with an exception. */

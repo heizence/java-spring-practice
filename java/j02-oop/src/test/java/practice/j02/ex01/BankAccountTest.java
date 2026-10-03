@@ -191,7 +191,7 @@ class BankAccountTest {
             assertThatThrownBy(() -> new BankAccount(null, 100)).isInstanceOf(NullPointerException.class);
         }
 
-        @ParameterizedTest(name = "owner \"{0}\"")
+        @ParameterizedTest(name = "owner {0}")
         @ValueSource(strings = {"", " ", "\t\n"})
         @DisplayName("rejects a blank owner")
         void blankOwner(String owner) {

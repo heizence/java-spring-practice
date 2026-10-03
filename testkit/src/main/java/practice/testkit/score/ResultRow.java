@@ -14,6 +14,8 @@ record ResultRow(String mutant, String exerciseId, String exerciseTitle, String 
                  Status status, String message) {
 
     static final String NO_MUTANT = "-";
+    /** The exercise id of tests that belong to no exercise. */
+    static final String NO_EXERCISE = "-";
 
     enum Status { PASSED, FAILED, SKIPPED }
 

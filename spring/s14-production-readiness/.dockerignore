@@ -1,0 +1,4 @@
+# Docker sends the build context to its daemon before it builds. The Dockerfile needs only the jar, so send nothing
+# else: no sources, no test reports, no local secrets.
+*
+!build/libs/bookstore.jar

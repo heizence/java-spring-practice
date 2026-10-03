@@ -5,7 +5,7 @@ A hands-on course for becoming fluent in Java and Spring Boot. Every module has 
 | Part | Content | Status |
 |---|---|---|
 | **1 · Java** | From syntax to concurrency, reflection and a mini dependency-injection container. 10 modules, about 6 weeks. | ✅ ready |
-| **2 · Spring Boot** | Core Spring on one bookstore application with MySQL: IoC/DI, AOP, REST, JPA, transactions and ACID, locking, events, caching, security, testing. About 7 weeks. | arrives in stages |
+| **2 · Spring Boot** | Core Spring on one bookstore application with MySQL: IoC/DI, AOP, REST, JPA, transactions and ACID, locking, events, caching, security, testing. 14 modules, about 7 weeks, plus an optional capstone. | ✅ ready |
 
 ## Start here
 
@@ -76,7 +76,7 @@ You work on **`my-work`**. `main` holds the fresh exercises and `solutions` the 
 | [docs/handbook/](docs/handbook/README.md) | conventions good teams follow, with reasons |
 | [docs/setup.md](docs/setup.md) | machine setup and troubleshooting |
 | [notes/](notes/README.md) | your own notes and your "looked it up" log |
-| `spring/` | Part 2 (arrives later) |
+| [spring/](spring/README.md) | Part 2: the Spring modules, [BOOKSTORE.md](spring/BOOKSTORE.md) and the capstone |
 
 ## Course map
 
@@ -88,7 +88,14 @@ You work on **`my-work`**. `main` holds the fresh exercises and `solutions` the 
 | 4 | J05 (rest) · [J06 Functional Java](java/j06-functional/README.md) |
 | 5 | [J07 Everyday APIs](java/j07-everyday-apis/README.md) · start of [J08 Concurrency](java/j08-concurrency/README.md) |
 | 6 | J08 (rest) · [J09 Reflection, annotations and proxies](java/j09-reflection-mini-spring/README.md) · [J10 JVM essentials](java/j10-jvm/README.md) |
-| 7–13 | Part 2: Spring Boot ([overview](spring/README.md)) |
+| 7 | [S01 Spring Boot fundamentals](spring/s01-boot-fundamentals/README.md) · [S02 Configuration](spring/s02-configuration/README.md) · start of [S03 AOP](spring/s03-aop/README.md) |
+| 8 | S03 (rest) · [S04 REST APIs](spring/s04-rest-apis/README.md) |
+| 9 | S04 (rest) · [S05 Database foundations](spring/s05-database-foundations/README.md) · start of [S06 Spring Data JPA](spring/s06-spring-data-jpa/README.md) |
+| 10 | S06 (rest) · start of [S07 Transactions](spring/s07-transactions/README.md) |
+| 11 | S07 (rest) · [S08 Concurrency and data integrity](spring/s08-concurrency-integrity/README.md) · start of [S09 Events and async](spring/s09-events-async/README.md) |
+| 12 | S09 (rest) · [S10 Caching](spring/s10-caching/README.md) · [S11 HTTP clients](spring/s11-http-clients/README.md) · start of [S12 Security](spring/s12-security/README.md) |
+| 13 | S12 (rest) · [S13 Testing strategy](spring/s13-testing-strategy/README.md) · [S14 Production readiness](spring/s14-production-readiness/README.md) |
+| after 13 | [Capstone ★](spring/capstone/README.md): a small API from an empty folder |
 
 ## Habits that make this work
 

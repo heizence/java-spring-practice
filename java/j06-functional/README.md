@@ -279,7 +279,7 @@ List<String> labels = orders.stream().map(Order::label).toList();     // better
 
 `peek(action)` runs an action on each element that passes by. It exists for debugging. Don't use it for real work: a stream runs only the operations it needs. Since Java 9, `list.stream().peek(...).count()` doesn't run `peek` at all, because `count()` can get the size from the list.
 
-`parallelStream()` splits the work over the threads of one shared pool, the *common ForkJoinPool*. That helps only for CPU-heavy work on large amounts of data. It hurts for blocking work such as database calls, because every parallel stream in the application shares those few threads. In a parallel stream, `forEach` runs in no particular order, and adding to an `ArrayList` from several threads at once loses elements or throws exceptions. Collectors and `toList()` are safe in parallel streams and keep the order.
+`parallelStream()` splits the work over the threads of one shared pool, the *common ForkJoinPool*. That helps only for CPU-heavy work on large amounts of data. It hurts for blocking work such as database calls, because every parallel stream in the application shares those few threads. In a parallel stream, `forEach` runs in no particular order, and adding to an `ArrayList` from several threads at once loses elements or throws exceptions. `toList()` and the collectors are safe in parallel streams: each thread collects its own part, and the parts are combined at the end. `toList()` keeps the order.
 
 A stream gets its order from its source. A `List` has an order, so its stream has one. A `HashSet` or `HashMap` has none, so streaming it gives the elements in an order you must not rely on. Use a `LinkedHashSet` or `LinkedHashMap` (insertion order), a `TreeSet` or `TreeMap` (sorted), or `sorted()`.
 
@@ -314,7 +314,7 @@ Stream.of(1, 2, 3, 4, 5).gather(Gatherers.windowFixed(2)).toList();            /
 Stream.of(1, 2, 3, 4).gather(Gatherers.windowSliding(2)).toList();             // [[1, 2], [2, 3], [3, 4]]
 Stream.of(1, 2, 3).gather(Gatherers.scan(() -> 0, Integer::sum)).toList();     // [1, 3, 6]
 Stream.of(1, 2, 3).gather(Gatherers.fold(() -> "", (s, n) -> s + n)).toList(); // ["123"]
-// mapConcurrent(n, function): maps on up to n virtual threads at a time and keeps the order (see J08)
+// mapConcurrent(n, function): maps on up to n virtual threads (J08) at a time and keeps the order
 ```
 
 `windowSliding` emits one short window when the stream is shorter than the window. `scan` emits the running result after each element. `fold` emits one result at the end, even for an empty stream.
@@ -334,7 +334,7 @@ static Gatherer<Integer, ?, Integer> takeWhileIncreasing() {
                     return false;                   // stop: we want no more elements
                 }
                 last.value = n;
-                return downstream.push(n);          // false when the downstream is full, e.g. after limit()
+                return downstream.push(n);          // false when later steps want no more, as after limit(3)
             });
 }
 ```
@@ -365,7 +365,7 @@ static Gatherer<Integer, ?, Integer> takeWhileIncreasing() {
 - Don't use parallel streams in code that handles requests. Spring already serves requests on many threads, and blocking work in the common pool slows the whole application down. See [Concurrency](../../docs/handbook/concurrency.md).
 - Inside a lambda, wrap a checked exception in a meaningful unchecked one instead of hiding it. See [Exceptions](../../docs/handbook/exceptions.md).
 - Keep money in `long` cents or `BigDecimal` in stream code too: `mapToLong(...).sum()`, never `mapToDouble`. See [Dates and money](../../docs/handbook/dates-and-money.md).
-- Plain loops are fine. Reviewers favor whichever version reads best. See [Java style](../../docs/handbook/java-style.md).
+- Plain loops are fine. Reviewers favor whichever version reads best. See "Streams or a loop?" in [Functional style](../../docs/handbook/functional-style.md).
 
 ## Exercises
 
@@ -382,7 +382,7 @@ You build a small toolbox of higher-order functions: methods that take functions
 <details>
 <summary>Hint 1</summary>
 
-`compose` and `andThen` are one line each: return a lambda that calls the functions, such as `input -> second.apply(first.apply(input))`. Check the arguments *before* the `return`, so a `null` fails right away instead of inside the lambda later.
+`compose` and `andThen` each return a lambda: it takes the input, applies one function, and passes the result to the other. Check the arguments *before* the `return`, so a `null` fails right away instead of inside the lambda later.
 </details>
 
 <details>

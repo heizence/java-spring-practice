@@ -216,7 +216,7 @@ File errors are `IOException`s with specific subclasses: `NoSuchFileException`, 
 CSV looks simple: values separated by commas. Real files aren't that simple. [RFC 4180](https://www.rfc-editor.org/rfc/rfc4180) describes the common format, and these are the traps:
 
 - **Commas inside values.** A value with a comma is quoted: `"Effective Java, 3rd Edition"`. `line.split(",")` cuts it in two.
-- **Quotes inside values.** Inside a quoted value, a quote is written twice: `"The ""Pragmatic"" Programmer"`.
+- **Quotes inside values.** Inside a quoted value, a quote is written twice: `"The ""Pragmatic"" Programmer"`. (J07-04 leaves this out, to keep the exercise small.)
 - **Line breaks inside values.** A quoted value may even contain a line break, so one record can cover several lines. (J07-04 doesn't allow this, to keep the exercise small.)
 - **Empty fields at the end.** `"a,b,,".split(",")` returns `[a, b]`: `split` drops empty strings at the end. Pass a negative limit to keep them: `split(",", -1)`.
 - **The byte order mark.** Excel's "CSV UTF-8" format starts the file with the invisible character U+FEFF. The first header is then read as U+FEFF followed by `isbn`, which isn't equal to `"isbn"`.
@@ -368,7 +368,7 @@ Read the header first with `readLine()`. It returns `null` for an empty file. If
 <details>
 <summary>Hint 2</summary>
 
-Split a row with a loop over its characters and a `boolean quoted`. A quote opens a quoted field only as the first character of a field. Inside a quoted field, `""` adds one quote and a single `"` closes the field. Don't use `split(",")`.
+Split a row with a loop over its characters and a `boolean quoted`. A quote opens a quoted field only as the first character of a field, and the next quote closes it. Don't use `split(",")`.
 </details>
 
 <details>

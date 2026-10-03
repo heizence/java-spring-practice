@@ -16,21 +16,21 @@ class BracketsTest {
     @DisplayName("Basic")
     class Basic {
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"()", "[]", "{}", "()[]{}", "([]{})", "{[()()]}"})
         @DisplayName("accepts balanced brackets")
         void acceptsBalanced(String text) {
             assertThat(Brackets.isBalanced(text)).isTrue();
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"(]", "{)", "[}"})
         @DisplayName("rejects a bracket closed by the wrong type")
         void rejectsWrongType(String text) {
             assertThat(Brackets.isBalanced(text)).isFalse();
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"([)]", "{[}]", "[(])"})
         @DisplayName("rejects brackets closed in the wrong order")
         void rejectsWrongOrder(String text) {
@@ -48,7 +48,7 @@ class BracketsTest {
             assertThat(Brackets.isBalanced("")).isTrue();
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"hello", "if (a[i] > 0) { return f(x); }", "<a href=\"x\">"})
         @DisplayName("ignores every character that isn't a bracket, including < and >")
         void ignoresOtherCharacters(String text) {
@@ -61,14 +61,14 @@ class BracketsTest {
             assertThat(Brackets.isBalanced("a)b(c")).isFalse();
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"(", "(()", "{[]", "(((("})
         @DisplayName("rejects an opening bracket that is never closed")
         void rejectsUnclosed(String text) {
             assertThat(Brackets.isBalanced(text)).isFalse();
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {")", "())", "][", ")("})
         @DisplayName("rejects a closing bracket when nothing is open")
         void rejectsCloserWithNothingOpen(String text) {

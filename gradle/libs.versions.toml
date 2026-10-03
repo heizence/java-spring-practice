@@ -6,7 +6,7 @@ java = "25"
 junit = "6.1.3"
 assertj = "3.27.7"
 mockito = "5.24.0"
-# Part 2 — Spring Boot (stage 2)
+# Part 2 — Spring Boot. Its BOM manages Spring, Hibernate, Jackson, Flyway, Testcontainers, MySQL Connector/J, Lombok…
 spring-boot = "4.1.1"
 
 [libraries]
@@ -16,3 +16,5 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+# Used by build-logic to apply the Spring Boot plugin in Part 2 modules.
+spring-boot-gradle-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }

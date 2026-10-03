@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
-import java.net.URI;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,7 +28,7 @@ class HttpRequestTest {
                     .build();
 
             assertThat(request.method()).isEqualTo("POST");
-            assertThat(request.uri()).isEqualTo(URI.create(ORDERS));
+            assertThat(request.url()).isEqualTo(ORDERS);
             assertThat(request.headers()).containsOnly(
                     entry("Content-Type", "application/json"), entry("Accept", "application/json"));
         }
@@ -64,9 +62,9 @@ class HttpRequestTest {
                     .header("X-Trace-Id", "abc123")
                     .build();
 
-            assertThat(copy.uri()).isEqualTo(URI.create("https://shop.example/api/orders/42"));
+            assertThat(copy.url()).isEqualTo("https://shop.example/api/orders/42");
             assertThat(copy.headers()).containsOnly(entry("Accept", "application/json"), entry("X-Trace-Id", "abc123"));
-            assertThat(original.uri()).isEqualTo(URI.create(ORDERS));
+            assertThat(original.url()).isEqualTo(ORDERS);
             assertThat(original.headers()).containsOnly(entry("Accept", "application/json"));
         }
 
@@ -81,7 +79,7 @@ class HttpRequestTest {
             var copy = original.toBuilder().build();
 
             assertThat(copy.method()).isEqualTo("PATCH");
-            assertThat(copy.uri()).isEqualTo(original.uri());
+            assertThat(copy.url()).isEqualTo(original.url());
             assertThat(copy.headers()).isEqualTo(original.headers());
         }
     }
@@ -110,7 +108,7 @@ class HttpRequestTest {
             builder.header("X-Trace-Id", "abc123").url("https://other.example/").method("DELETE");
 
             assertThat(request.method()).isEqualTo("GET");
-            assertThat(request.uri()).isEqualTo(URI.create(ORDERS));
+            assertThat(request.url()).isEqualTo(ORDERS);
             assertThat(request.headers()).containsOnly(entry("Accept", "application/json"));
         }
 
@@ -144,17 +142,6 @@ class HttpRequestTest {
             var request = HttpRequest.newBuilder(method, ORDERS).build();
 
             assertThat(request.method()).isEqualTo(method);
-        }
-
-        @ParameterizedTest(name = "{0}")
-        @ValueSource(strings = {
-                "http://shop.example", "https://shop.example/api/orders?page=2", "HTTPS://shop.example/",
-                "http://localhost:8080/health"})
-        @DisplayName("accepts absolute http and https URLs, in any letter case")
-        void supportedUrls(String url) {
-            var request = HttpRequest.newBuilder("GET", url).build();
-
-            assertThat(request.uri()).isEqualTo(URI.create(url));
         }
 
         @Test
@@ -198,7 +185,7 @@ class HttpRequestTest {
             assertThatThrownBy(() -> builder.header("Accept", null)).isInstanceOf(NullPointerException.class);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"get", "FETCH", "CONNECT", "", " GET"})
         @DisplayName("build() rejects an unsupported method")
         void unsupportedMethod(String method) {
@@ -209,19 +196,7 @@ class HttpRequestTest {
                     .hasMessageContaining(method);
         }
 
-        @ParameterizedTest(name = "\"{0}\"")
-        @ValueSource(strings = {"shop.example/orders", "/api/orders", "ftp://shop.example/file", "https://",
-                "not a url", "https:orders", ""})
-        @DisplayName("build() rejects a URL that isn't an absolute http or https URL")
-        void invalidUrl(String url) {
-            var builder = HttpRequest.newBuilder("GET", url);
-
-            assertThatThrownBy(builder::build)
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining(url);
-        }
-
-        @ParameterizedTest(name = "\"{0}\"")
+        @ParameterizedTest(name = "{0}")
         @ValueSource(strings = {"", " ", "\t"})
         @DisplayName("build() rejects a blank header name")
         void blankHeaderName(String name) {

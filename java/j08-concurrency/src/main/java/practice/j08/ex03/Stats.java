@@ -15,7 +15,8 @@ package practice.j08.ex03;
  *       maximum becomes {@code value} if {@code value} is larger.</li>
  *   <li>No update is lost, however many threads record at the same time. In particular, the maximum never goes
  *       down: right after {@code record(value)} returns, the maximum is at least {@code value}.</li>
- *   <li>A negative value throws {@link IllegalArgumentException} and changes nothing.</li>
+ *   <li>A negative value throws {@link IllegalArgumentException} with the value in its message, and changes
+ *       nothing.</li>
  *   <li>{@link #snapshot()} returns the count, the sum and the maximum. Before the first measurement, all three
  *       are 0.</li>
  *   <li>A snapshot taken while other threads are recording reads the three numbers one after another, so they may

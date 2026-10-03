@@ -35,8 +35,8 @@ final class ChildJvm {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(8);
 
-    // The java launcher reads these environment variables. Options in them would change the child JVM's settings
-    // behind the puzzle's back (_JAVA_OPTIONS even overrides the command line), so the child doesn't get them.
+    // The java launcher reads these environment variables. Options in them would quietly change the child JVM's
+    // settings (_JAVA_OPTIONS even overrides the command line), so the child doesn't get them.
     private static final List<String> JVM_OPTION_VARIABLES =
             List.of("JAVA_TOOL_OPTIONS", "JDK_JAVA_OPTIONS", "_JAVA_OPTIONS");
 

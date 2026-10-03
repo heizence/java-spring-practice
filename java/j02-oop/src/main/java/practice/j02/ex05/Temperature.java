@@ -15,14 +15,12 @@ package practice.j02.ex05;
  *       {@value #MAX_CELSIUS} °C, inclusive. NaN and infinity aren't allowed either. Every factory and
  *       {@link #plus} throws {@link IllegalArgumentException} with the value in the message.</li>
  *   <li>{@link #plus} returns a new temperature; the temperature you call it on never changes.</li>
- *   <li>{@link #equals} and {@link #hashCode} compare the rounded value. {@link #compareTo} orders from colder to
- *       warmer and returns 0 exactly when {@code equals} is true. {@link #isWarmerThan} and {@link #compareTo}
- *       throw {@link NullPointerException} for {@code null}.</li>
+ *   <li>{@link #equals} and {@link #hashCode} compare the rounded value.</li>
  *   <li>{@link #toString()} shows degrees Celsius with 2 decimal places and a dot, such as {@code "21.50 °C"} or
  *       {@code "-0.50 °C"}.</li>
  * </ul>
  */
-public final class Temperature implements Comparable<Temperature> {
+public final class Temperature {
 
     /** The lowest possible temperature: absolute zero. */
     public static final double ABSOLUTE_ZERO_CELSIUS = -273.15;
@@ -63,18 +61,6 @@ public final class Temperature implements Comparable<Temperature> {
 
     /** A new temperature that is {@code celsiusDelta} degrees Celsius warmer (or colder, if negative). */
     public Temperature plus(double celsiusDelta) {
-        // TODO: J02-05
-        throw new UnsupportedOperationException("TODO: J02-05");
-    }
-
-    /** {@code true} if this temperature is warmer than {@code other}. */
-    public boolean isWarmerThan(Temperature other) {
-        // TODO: J02-05
-        throw new UnsupportedOperationException("TODO: J02-05");
-    }
-
-    @Override
-    public int compareTo(Temperature other) {
         // TODO: J02-05
         throw new UnsupportedOperationException("TODO: J02-05");
     }

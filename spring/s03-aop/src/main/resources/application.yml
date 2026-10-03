@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: bookstore
+
+  web:
+    # Error messages, including bean validation messages, are always in English, whatever language the client asks
+    # for in its Accept-Language header.
+    locale: en
+    locale-resolver: fixed
+
+# S03 has no database: the coupons and books live in memory (CouponRepository, BookService), so the application
+# starts without Docker. From S05 on, the bookstore keeps its data in MySQL.

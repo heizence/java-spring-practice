@@ -36,7 +36,6 @@ class BinarySearchTreeTest {
 
             assertThat(tree.size()).isZero();
             assertThat(tree.inOrder()).isEmpty();
-            assertThat(tree.height()).isZero();
         }
 
         @Test
@@ -60,12 +59,11 @@ class BinarySearchTreeTest {
         }
 
         @Test
-        @DisplayName("min() and max() return the smallest and the largest key")
-        void minAndMax() {
+        @DisplayName("min() returns the smallest key")
+        void minIsSmallestKey() {
             var tree = treeOf(5, 3, 8, 1, 4, 9);
 
             assertThat(tree.min()).contains(1);
-            assertThat(tree.max()).contains(9);
         }
 
         @Test
@@ -86,14 +84,6 @@ class BinarySearchTreeTest {
             assertThat(tree.floor(12)).contains(10);
             assertThat(tree.floor(20)).contains(15);
         }
-
-        @Test
-        @DisplayName("height() counts the nodes on the longest path: 3 for a balanced tree of 7 keys")
-        void heightOfBalancedTree() {
-            var tree = treeOf(4, 2, 6, 1, 3, 5, 7);
-
-            assertThat(tree.height()).isEqualTo(3);
-        }
     }
 
     @Nested
@@ -113,23 +103,20 @@ class BinarySearchTreeTest {
         }
 
         @Test
-        @DisplayName("a tree with one key has height 1, and that key is both min and max")
+        @DisplayName("a tree with one key has that key as its min and as its only key")
         void singleKey() {
             var tree = treeOf(42);
 
-            assertThat(tree.height()).isEqualTo(1);
             assertThat(tree.min()).contains(42);
-            assertThat(tree.max()).contains(42);
             assertThat(tree.inOrder()).containsExactly(42);
         }
 
         @Test
-        @DisplayName("an empty tree has no min, no max and no floor, and contains nothing")
+        @DisplayName("an empty tree has no min and no floor, and contains nothing")
         void emptyTree() {
             var tree = new BinarySearchTree<Integer>();
 
             assertThat(tree.min()).isEmpty();
-            assertThat(tree.max()).isEmpty();
             assertThat(tree.floor(5)).isEmpty();
             assertThat(tree.contains(5)).isFalse();
         }
@@ -152,18 +139,18 @@ class BinarySearchTreeTest {
         }
 
         @Test
-        @DisplayName("keys added in sorted order make the tree as tall as its size, because it doesn't balance itself")
-        void sortedInsertionDegenerates() {
+        @DisplayName("handles 1,000 keys added in sorted order, which make the tree a chain 1,000 levels deep")
+        void sortedInsertion() {
             var tree = new BinarySearchTree<Integer>();
 
             for (int key = 1; key <= 1_000; key++) {
                 tree.add(key);
             }
 
-            assertThat(tree.height()).isEqualTo(1_000);
+            assertThat(tree.size()).isEqualTo(1_000);
             assertThat(tree.min()).contains(1);
-            assertThat(tree.max()).contains(1_000);
             assertThat(tree.floor(500)).contains(500);
+            assertThat(tree.inOrder()).hasSize(1_000).startsWith(1, 2).endsWith(999, 1_000);
         }
 
         @Test
@@ -246,12 +233,8 @@ class BinarySearchTreeTest {
                             .isEqualTo(model.contains(key));
                     case 3 -> assertThat(tree.floor(key)).as("floor(%d) at step %d", key, step)
                             .isEqualTo(Optional.ofNullable(model.floor(key)));
-                    default -> {
-                        assertThat(tree.min()).as("min() at step %d", step)
-                                .isEqualTo(model.isEmpty() ? Optional.empty() : Optional.of(model.first()));
-                        assertThat(tree.max()).as("max() at step %d", step)
-                                .isEqualTo(model.isEmpty() ? Optional.empty() : Optional.of(model.last()));
-                    }
+                    default -> assertThat(tree.min()).as("min() at step %d", step)
+                            .isEqualTo(model.isEmpty() ? Optional.empty() : Optional.of(model.first()));
                 }
                 assertThat(tree.size()).as("size() after step %d", step).isEqualTo(model.size());
                 if (step % 1_000 == 0) {
