@@ -30,6 +30,9 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "The member was not found."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "The order was not found."),
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "The coupon was not found."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "The category was not found."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "The payment was not found."),
+    ORDER_LINE_NOT_FOUND(HttpStatus.NOT_FOUND, "The order line was not found."),
 
     // A broken business rule
     OUT_OF_STOCK(HttpStatus.CONFLICT, "Not enough copies are in stock."),

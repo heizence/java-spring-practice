@@ -129,6 +129,7 @@ Docker must be running.
 - **`GlobalExceptionHandler` catches every exception**, including Spring Security's `AccessDeniedException` and
   `AuthenticationException` thrown inside controllers. S12 must let those through (or map them to 401/403), or
   they become 500.
+- **Foreign keys take locks.** Inserting a child row (wallet history, coupon issue, payment) takes a shared lock on its parent row; a later update of that parent in the same transaction can then deadlock with a concurrent request doing the same. Code that runs concurrently should lock the parent first (`SELECT … FOR UPDATE`) or retry on `ConcurrencyFailureException` (S08 shows both).
 - **Business rules throw `BusinessException`** with an `ErrorCode`; invalid arguments that request validation should
   have stopped throw `IllegalArgumentException` (a 500). Add codes to `ErrorCode`; never rename one.
 - **Entities:** protected no-argument constructor, no setters, factories that check their arguments, `LAZY`

@@ -60,7 +60,7 @@ Fixes:
 | Batch fetching | `hibernate.default_batch_fetch_size: 100` | loading lazy collections in groups: N+1 becomes 1 + N/100 |
 | A projection | a query that selects directly into a record | read-only screens and reports |
 
-Don't fetch-join a collection *and* page in the database: Hibernate then pages in memory and warns about it. Page the parents first, then batch-fetch the children.
+Be careful when you fetch-join a collection *and* page. Older Hibernate versions loaded every row and paged in memory, with a warning; Hibernate 7.4 pages such queries in SQL with a subquery. Either way, Spring Data's count query for an inner `join fetch` counts joined rows, not parents. The safest pattern: page the parents first, then batch-fetch the children.
 
 ## The persistence context
 
