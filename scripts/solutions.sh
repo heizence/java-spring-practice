@@ -39,14 +39,30 @@ case "$action" in
     echo "Applied $overlay. Run 'scripts/solutions.sh reset${target:+ $target}' before committing."
     ;;
   reset)
+    tracked=()
+    untracked=()
     while IFS= read -r -d '' file; do
       path="${file#.solutions/}"
       if git ls-files --error-unmatch -- "$path" > /dev/null 2>&1; then
-        git checkout -- "$path"
+        tracked+=("$path")
       else
-        rm -f -- "$path"
+        untracked+=("$path")
       fi
     done < <(find "$overlay" -type f -print0)
+    # Restore all tracked files in one git call, retrying briefly: IDEs and other tools take git's index lock for
+    # a moment when they refresh, and a reset must not stop halfway.
+    if [[ ${#tracked[@]} -gt 0 ]]; then
+      for attempt in 1 2 3 4 5 6 7 8 9 10; do
+        if printf '%s\0' "${tracked[@]}" | git checkout --pathspec-from-file=- --pathspec-file-nul 2> /dev/null; then
+          break
+        fi
+        [[ $attempt -eq 10 ]] && { echo "git checkout kept failing (index.lock?). Run reset again." >&2; exit 1; }
+        sleep 1
+      done
+    fi
+    for path in ${untracked[@]+"${untracked[@]}"}; do
+      rm -f -- "$path"
+    done
     # Remove directories that only held overlay files (for example verification mutants).
     find java spring -type d -empty -delete 2>/dev/null || true
     echo "Restored the exercise files${target:+ in $target}."
